@@ -4,11 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>DAAIM — Dynamic Architecture AI Map</title>
-  <meta name="description" content="Interactive enterprise architecture map unifying ServiceNow CMDB, Confluence, SharePoint, and Vertex AI RAG/MCP gap intelligence." />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%230f172a'/%3E%3Cstop offset='55%25' stop-color='%230284c7'/%3E%3Cstop offset='100%25' stop-color='%2314b8a6'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='15' fill='url(%23g)'/%3E%3Cpath d='M32 17 L18 45 M32 17 L46 45 M18 45 L46 45' stroke='%23ffffff' stroke-width='3.8' stroke-linecap='round' opacity='0.9'/%3E%3Ccircle cx='32' cy='17' r='6.2' fill='%23ffffff'/%3E%3Ccircle cx='18' cy='45' r='5.6' fill='%23bae6fd'/%3E%3Ccircle cx='46' cy='45' r='5.6' fill='%235eead4'/%3E%3Cpath d='M50 10 L52.2 15.5 L57.5 17.5 L52.2 19.5 L50 25 L47.8 19.5 L42.5 17.5 L47.8 15.5 Z' fill='%23fde047'/%3E%3C/svg%3E" />
+  <meta name="description" content="Interactive enterprise architecture map unifying ServiceNow CMDB, Confluence, SharePoint, and Agentic AI Platform (Vertex AI + RAG) gap intelligence." />
   <script src="./assets/tailwindcss.min.js"></script>
   <style>
 
     :root {
+      color-scheme: light;
       --background: #eef3f9;
       --content: #f8fafc;
       --card: #ffffff;
@@ -26,25 +28,51 @@
       --error: #dc2626;
     }
     html.dark {
-      --background: #0b1220;
-      --content: #111a2c;
-      --card: #162033;
-      --sidebar: #0e1626;
-      --border: #26344d;
-      --card-border: #24324a;
+      color-scheme: dark;
+      --background: #09101d;
+      --content: #111b2e;
+      --card: #162238;
+      --sidebar: #0d1627;
+      --border: #2a3b58;
+      --card-border: #253652;
       --foreground: #f1f5f9;
       --muted-foreground: #94a3b8;
       --placeholder: #64748b;
       --primary: #3b82f6;
       --primary-foreground: #ffffff;
       --link: #60a5fa;
-      --success: #22c55e;
-      --warning: #f59e0b;
+      --success: #4ade80;
+      --warning: #fbbf24;
       --error: #f87171;
     }
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      transition: background-color 180ms ease, color 180ms ease;
     }
+    html.dark .canvas-stage {
+      background: #0b1322;
+    }
+    html.dark select, html.dark input {
+      background-color: var(--content);
+      color: var(--foreground);
+      border-color: var(--border);
+    }
+    html.dark select option {
+      background-color: #162238;
+      color: #f1f5f9;
+    }
+    /* High-contrast dark-mode overrides for accent utility classes */
+    html.dark .text-\[\#0057b8\] { color: #60a5fa !important; }
+    html.dark .text-\[\#15803d\] { color: #4ade80 !important; }
+    html.dark .text-\[\#c2410c\] { color: #fb923c !important; }
+    html.dark .text-\[\#b45309\] { color: #fbbf24 !important; }
+    html.dark .text-\[\#dc2626\] { color: #f87171 !important; }
+    html.dark .text-\[\#0369a1\] { color: #38bdf8 !important; }
+    html.dark .text-\[\#4338ca\], html.dark .text-\[\#4f46e5\] { color: #818cf8 !important; }
+    html.dark .text-\[\#0f766e\], html.dark .text-\[\#0d9488\] { color: #2dd4bf !important; }
+    html.dark #arrow-cmdb path { fill: #94a3b8; }
+    html.dark #arrow-highlight path { fill: #60a5fa; }
+    html.dark #arrow-ai path { fill: #2dd4bf; }
     * { box-sizing: border-box; }
     html, body {
       margin: 0;
@@ -79,7 +107,7 @@
     .graph-node {
       position: absolute;
       border-radius: 10px;
-      border: 1.5px solid var(--node-border);
+      border: 2.5px solid var(--host-border, var(--node-border));
       background: var(--node-bg);
       color: var(--foreground);
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
@@ -89,14 +117,55 @@
       z-index: 10;
     }
     .graph-node:hover {
-      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.14);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.16);
       z-index: 20;
     }
     .graph-node.selected {
-      box-shadow: 0 0 0 3px color-mix(in srgb, var(--node-accent) 35%, transparent), 0 8px 22px rgba(0, 0, 0, 0.16);
-      border-color: var(--node-accent);
+      box-shadow: 0 0 0 3.5px color-mix(in srgb, var(--host-border, var(--node-accent)) 38%, transparent), 0 8px 22px rgba(0, 0, 0, 0.2);
+      border-color: var(--host-border, var(--node-accent));
       z-index: 25;
     }
+    /* Hosting Platform Outer Border Colors (Equinix, Edge, AWS, Azure, GCP) */
+    .host-equinix  { --host-border: #e11d48; }
+    .host-edge     { --host-border: #9333ea; }
+    .host-aws      { --host-border: #f59e0b; }
+    .host-azure    { --host-border: #0078d4; }
+    .host-gcp      { --host-border: #16a34a; }
+    .host-external { --host-border: #94a3b8; border-style: dashed; }
+
+    .host-pill-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 8px;
+      border-radius: 6px;
+      border: 1px solid transparent;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--muted-foreground);
+      cursor: pointer;
+      transition: background 140ms ease, border-color 140ms ease, color 140ms ease;
+    }
+    .host-pill-btn:hover {
+      background: var(--content);
+      color: var(--foreground);
+    }
+    .host-pill-btn.active {
+      background: color-mix(in srgb, var(--pill-color, var(--primary)) 14%, var(--card));
+      border-color: var(--pill-color, var(--primary));
+      color: var(--foreground);
+      font-weight: 600;
+    }
+    .host-swatch {
+      width: 13px;
+      height: 11px;
+      border-radius: 3px;
+      border: 2.5px solid var(--pill-color);
+      background: var(--card);
+      display: inline-block;
+      flex-shrink: 0;
+    }
+
     .graph-node.dimmed {
       opacity: 0.28;
     }
@@ -250,18 +319,19 @@
   <!-- TOP ENTERPRISE BRAND BAR -->
   <header class="brand-bar px-4 py-2.5 flex flex-wrap items-center justify-between gap-3 border-b border-white/15">
     <div class="flex items-center gap-3">
-      <div class="w-8 h-8 rounded-lg bg-white/15 flex items-center justify-center border border-white/25" aria-hidden="true">
-        <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="5" r="2.5"></circle>
-          <circle cx="5" cy="18" r="2.5"></circle>
-          <circle cx="19" cy="18" r="2.5"></circle>
-          <path d="M10.7 7.1L6.3 15.8M13.3 7.1l4.4 8.7M7.5 18h9"></path>
+      <div class="w-9 h-9 rounded-xl bg-white/15 flex items-center justify-center border border-white/25 shadow-sm" aria-hidden="true">
+        <svg class="w-6 h-6" viewBox="0 0 64 64" fill="none">
+          <path d="M32 17 L18 45 M32 17 L46 45 M18 45 L46 45" stroke="#ffffff" stroke-width="4" stroke-linecap="round" opacity="0.9"></path>
+          <circle cx="32" cy="17" r="6.2" fill="#ffffff"></circle>
+          <circle cx="18" cy="45" r="5.6" fill="#bae6fd"></circle>
+          <circle cx="46" cy="45" r="5.6" fill="#5eead4"></circle>
+          <path d="M50 10 L52.2 15.5 L57.5 17.5 L52.2 19.5 L50 25 L47.8 19.5 L42.5 17.5 L47.8 15.5 Z" fill="#fde047"></path>
         </svg>
       </div>
       <div>
         <div class="flex items-center gap-2">
           <h1 class="text-sm sm:text-base font-semibold tracking-tight leading-tight">Dynamic Architecture AI Map (DAAIM)</h1>
-          <span class="hidden md:inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-white/15 border border-white/20">GCP + Vertex AI MCP Demo</span>
+          <span class="hidden md:inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-white/15 border border-white/20">GCP + Agentic AI Demo</span>
         </div>
         <p class="text-xs text-white/80 hidden sm:block">Live ServiceNow CMDB topology unified with Confluence &amp; SharePoint documentation, gap intelligence, and AI recommendations</p>
       </div>
@@ -275,9 +345,9 @@
         </svg>
         <span>Simulate Pub/Sub + AI Sync</span>
       </button>
-      <button id="btnToggleTheme" type="button" title="Toggle Light / Dark Theme" class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium bg-white/10 hover:bg-white/20 text-white border border-white/20 transition">
+      <button id="btnToggleTheme" type="button" title="Toggle Light / Dark Theme" class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-white/15 hover:bg-white/25 text-white border border-white/25 transition">
         <span id="themeIcon" aria-hidden="true">&#9790;</span>
-        <span id="themeLabel" class="hidden sm:inline">Dark</span>
+        <span id="themeLabel">Dark Mode</span>
       </button>
       <button id="btnOpenAiDrawer" type="button" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-white/15 hover:bg-white/25 text-white border border-white/25 transition">
         <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -294,7 +364,7 @@
       <div class="flex items-center justify-between gap-2 mb-2.5">
         <div class="flex items-center gap-2 text-xs font-semibold">
           <span class="inline-block w-2 h-2 rounded-full bg-[#0072ce]"></span>
-          <span id="pipelineHeadline">GCP Event-Driven Ingestion Pipeline (Cloud Pub/Sub + Vertex AI RAG/MCP)</span>
+          <span id="pipelineHeadline">GCP Event-Driven Ingestion Pipeline (Cloud Pub/Sub + Agentic AI & RAG)</span>
         </div>
         <button id="btnClosePipeline" type="button" class="text-xs text-[var(--muted-foreground)] hover:text-[var(--foreground)]">Hide</button>
       </div>
@@ -311,14 +381,14 @@
             <span>2. Confluence &amp; SharePoint</span>
             <span class="pipe-status text-[var(--muted-foreground)]">Idle</span>
           </div>
-          <p class="text-[var(--muted-foreground)] leading-snug">Scrape HLDs, diagrams, DR runbooks &amp; Cyber SAR approvals into GCS + <code>pgvector</code></p>
+          <p class="text-[var(--muted-foreground)] leading-snug">Scrape HLDs, diagrams, DR runbooks &amp; Cyber SRA approvals into GCS + <code>pgvector</code></p>
         </div>
         <div id="pipeStep3" class="pipe-step surface-card border rounded-lg p-2.5">
           <div class="flex items-center justify-between font-semibold mb-1">
-            <span>3. Vertex AI + MCP Agent</span>
+            <span>3. Agentic AI & RAG Engine</span>
             <span class="pipe-status text-[var(--muted-foreground)]">Idle</span>
           </div>
-          <p class="text-[var(--muted-foreground)] leading-snug">Multimodal diagram scan, Tier 1 gap scoring &amp; live MCP tool verification</p>
+          <p class="text-[var(--muted-foreground)] leading-snug">Multimodal diagram scan, Tier 1 gap scoring &amp; live agentic tool verification</p>
         </div>
         <div id="pipeStep4" class="pipe-step surface-card border rounded-lg p-2.5">
           <div class="flex items-center justify-between font-semibold mb-1">
@@ -474,6 +544,17 @@
             </select>
           </label>
           <label class="flex items-center gap-1.5 text-[var(--muted-foreground)]">
+            <span class="hidden sm:inline">Hosted On</span>
+            <select id="filterHosting" class="rounded-lg border border-[var(--border)] bg-[var(--content)] text-[var(--foreground)] px-2 py-1.5 text-xs">
+              <option value="ALL">All</option>
+              <option value="equinix">Equinix</option>
+              <option value="edge">Edge</option>
+              <option value="aws">AWS</option>
+              <option value="azure">Azure</option>
+              <option value="gcp">GCP</option>
+            </select>
+          </label>
+          <label class="flex items-center gap-1.5 text-[var(--muted-foreground)]">
             <span class="hidden sm:inline">Owner</span>
             <select id="filterOwner" class="rounded-lg border border-[var(--border)] bg-[var(--content)] text-[var(--foreground)] px-2 py-1.5 text-xs">
               <option value="ALL">All</option>
@@ -550,6 +631,30 @@
               </div>
             </div>
 
+            <!-- Dedicated Hosted On Legend Strip (Zero Canvas Overlap) -->
+            <div id="hostingLegend" class="px-4 py-1.5 border-b border-[var(--card-border)] bg-[var(--content)] flex flex-wrap items-center justify-between gap-2">
+              <div class="flex flex-wrap items-center gap-1">
+                <span class="text-xs font-semibold text-[var(--foreground)] pr-2 border-r border-[var(--border)] mr-1">Hosted On (Box Outline)</span>
+                <button type="button" class="host-pill-btn" data-host-filter="equinix" style="--pill-color:#e11d48" title="Click to highlight Equinix resources">
+                  <span class="host-swatch"></span><span>Equinix</span>
+                </button>
+                <button type="button" class="host-pill-btn" data-host-filter="edge" style="--pill-color:#9333ea" title="Click to highlight Edge resources">
+                  <span class="host-swatch"></span><span>Edge</span>
+                </button>
+                <button type="button" class="host-pill-btn" data-host-filter="aws" style="--pill-color:#f59e0b" title="Click to highlight AWS resources">
+                  <span class="host-swatch"></span><span>AWS</span>
+                </button>
+                <button type="button" class="host-pill-btn" data-host-filter="azure" style="--pill-color:#0078d4" title="Click to highlight Azure resources">
+                  <span class="host-swatch"></span><span>Azure</span>
+                </button>
+                <button type="button" class="host-pill-btn" data-host-filter="gcp" style="--pill-color:#16a34a" title="Click to highlight GCP resources">
+                  <span class="host-swatch"></span><span>GCP</span>
+                </button>
+                <button type="button" id="clearHostLegendBtn" class="hidden text-xs font-semibold text-[var(--link)] hover:underline px-1.5">Reset</button>
+              </div>
+              <span class="hidden lg:inline text-xs text-[var(--muted-foreground)]">Click a host to filter · Drag nodes · Click dashed green edge for AI evidence</span>
+            </div>
+
             <!-- Interactive SVG + HTML Graph Stage -->
             <div id="canvasStage" class="canvas-stage pannable flex-1 min-h-[430px]">
               <!-- Transformed Viewport Layer -->
@@ -574,7 +679,7 @@
 
               <!-- Floating Legend (Matches Mockup Bottom-Left) -->
               <div class="absolute bottom-3 left-3 surface-card border rounded-lg px-3 py-2.5 shadow-sm z-20 text-xs max-w-[195px]">
-                <div class="font-semibold mb-1.5 text-[var(--foreground)]">Legend</div>
+                <div class="font-semibold mb-1.5 text-[var(--foreground)]">Asset Type &amp; Edges</div>
                 <div class="grid grid-cols-1 gap-1 text-[var(--muted-foreground)]">
                   <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-[#1d63dc]"></span><span>Application</span></div>
                   <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-[#5b45d6]"></span><span>Parent / Service</span></div>
@@ -604,10 +709,7 @@
                 <button id="zoomResetBtn" type="button" class="px-2 h-7 rounded hover:bg-[var(--content)] text-xs font-medium text-[var(--muted-foreground)]" title="Reset View">Fit</button>
               </div>
 
-              <!-- Interactive Hint Chip -->
-              <div class="absolute top-3 right-3 hidden sm:flex items-center gap-1.5 surface-card border rounded-full px-2.5 py-1 text-xs text-[var(--muted-foreground)] shadow-sm z-20">
-                <span>Drag nodes · Click node to inspect · Click dashed green line for AI evidence</span>
-              </div>
+
 
               <!-- AI Edge Evidence Popover -->
               <div id="edgePopover" class="hidden absolute top-3 left-3 w-80 surface-card border rounded-xl shadow-xl p-3.5 z-30 text-xs space-y-2.5">
@@ -619,7 +721,7 @@
                   <button id="closeEdgePop" type="button" class="text-[var(--muted-foreground)] hover:text-[var(--foreground)] text-base leading-none">&times;</button>
                 </div>
                 <div class="flex items-center justify-between text-[var(--muted-foreground)] bg-[var(--content)] rounded-lg px-2.5 py-1.5 border border-[var(--border)]">
-                  <span>Vertex AI Confidence</span>
+                  <span>AI Confidence</span>
                   <span id="edgePopConfidence" class="font-mono font-bold text-[#0d9488]">87%</span>
                 </div>
                 <p id="edgePopEvidence" class="text-[var(--muted-foreground)] leading-relaxed"></p>
@@ -716,7 +818,7 @@
                 </div>
                 <span class="text-xs font-semibold text-[#4338ca]">Launch &rsaquo;</span>
               </div>
-              <p class="text-xs text-[var(--muted-foreground)] leading-relaxed">All CMDB topology, DR runbooks, cyber approvals, and live incident context in one place. Click to query Vertex AI + MCP live.</p>
+              <p class="text-xs text-[var(--muted-foreground)] leading-relaxed">All CMDB topology, DR runbooks, cyber approvals, and live incident context in one place. Click to query Agentic AI Platform (Vertex AI + RAG) live.</p>
             </div>
             <div class="inline-flex items-center gap-1.5 text-xs font-semibold text-[#4f46e5]">
               <span>Ask about blast radius, DR readiness, or gaps &rarr;</span>
@@ -753,6 +855,7 @@
                   <th class="px-4 py-3 font-semibold">CI / Asset</th>
                   <th class="px-4 py-3 font-semibold">Parent Tier 1 App</th>
                   <th class="px-4 py-3 font-semibold">Category</th>
+                  <th class="px-4 py-3 font-semibold">Hosted On</th>
                   <th class="px-4 py-3 font-semibold">Owner</th>
                   <th class="px-4 py-3 font-semibold">HLD / Design</th>
                   <th class="px-4 py-3 font-semibold">DR Runbook</th>
@@ -783,7 +886,7 @@
               <option value="ALL">All Document Types</option>
               <option value="HLD">Architecture Design / HLD</option>
               <option value="DR_RUNBOOK">DR Runbook</option>
-              <option value="CYBER_APPROVAL">Cyber Approval (SAR)</option>
+              <option value="CYBER_APPROVAL">Cyber Approval (SRA)</option>
               <option value="SUPPORT_RUNBOOK">Support Runbook</option>
             </select>
           </div>
@@ -794,7 +897,7 @@
       <!-- VIEW 5: AI RECOMMENDATIONS -->
       <section id="view-recommendations" class="view-pane hidden p-5 space-y-4">
         <div>
-          <h2 class="text-lg font-bold">Vertex AI Architecture &amp; Resilience Recommendations</h2>
+          <h2 class="text-lg font-bold">AI Architecture &amp; Resilience Recommendations</h2>
           <p class="text-xs text-[var(--muted-foreground)]">Grounded improvement actions synthesized from CMDB graphs, multimodal diagram freshness, and documentation coverage</p>
         </div>
         <div id="recsList" class="space-y-3"></div>
@@ -831,8 +934,8 @@
       <!-- VIEW 8: CONNECTORS & POLICY SETTINGS -->
       <section id="view-settings" class="view-pane hidden p-5 space-y-5">
         <div>
-          <h2 class="text-lg font-bold">GCP Data Connectors, MCP Mesh &amp; Tier 1 Gap Policies</h2>
-          <p class="text-xs text-[var(--muted-foreground)]">Phase 1 connectors are active on Cloud Run + Pub/Sub; Phase 2/3 enterprise connectors plug directly into the same canonical event bus and MCP mesh</p>
+          <h2 class="text-lg font-bold">GCP Data Connectors, Agentic Tool Mesh &amp; Tier 1 Gap Policies</h2>
+          <p class="text-xs text-[var(--muted-foreground)]">Phase 1 connectors are active on Cloud Run + Pub/Sub; Phase 2/3 enterprise connectors plug directly into the same canonical event bus and agentic tool mesh</p>
         </div>
         <div id="settingsContent" class="grid grid-cols-1 lg:grid-cols-2 gap-4"></div>
       </section>
@@ -840,7 +943,7 @@
     </main>
   </div>
 
-  <!-- SLIDE-OVER DRAWER: ASK DAAIM AI (VERTEX AI RAG + MCP LIVE TRACE) -->
+  <!-- SLIDE-OVER DRAWER: ASK DAAIM AI AGENT -->
   <div id="aiDrawerBackdrop" class="hidden fixed inset-0 modal-backdrop z-50 flex justify-end">
     <div class="surface-card w-full max-w-lg h-full border-l flex flex-col shadow-2xl">
       <div class="px-4 py-3.5 border-b border-[var(--card-border)] flex items-center justify-between">
@@ -849,8 +952,8 @@
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l2.2 5.3L20 10l-5.8 1.7L12 17l-2.2-5.3L4 10l5.8-1.7L12 3z"></path></svg>
           </div>
           <div>
-            <h3 class="text-sm font-bold">DAAIM AI Agent (Vertex AI + MCP)</h3>
-            <p class="text-xs text-[var(--muted-foreground)]">ACL-filtered RAG + live read-only MCP tool execution</p>
+            <h3 class="text-sm font-bold">DAAIM Agentic AI Assistant</h3>
+            <p class="text-xs text-[var(--muted-foreground)]">ACL-filtered RAG + live read-only agentic tool execution</p>
           </div>
         </div>
         <button id="btnCloseAiDrawer" type="button" class="text-lg px-2 text-[var(--muted-foreground)] hover:text-[var(--foreground)]">&times;</button>
@@ -862,7 +965,7 @@
         <div class="flex flex-wrap gap-1.5">
           <button type="button" class="ai-prompt-chip px-2.5 py-1 rounded-full text-xs border border-[var(--border)] bg-[var(--card)] hover:border-[#0057b8] transition" data-prompt="What is the blast radius if VM-ORD-DB-01 goes down?">Blast radius: VM-ORD-DB-01</button>
           <button type="button" class="ai-prompt-chip px-2.5 py-1 rounded-full text-xs border border-[var(--border)] bg-[var(--card)] hover:border-[#0057b8] transition" data-prompt="Summarize all Tier 1 DR and Cyber Approval gaps across our apps.">Tier 1 DR &amp; Cyber gaps</button>
-          <button type="button" class="ai-prompt-chip px-2.5 py-1 rounded-full text-xs border border-[var(--border)] bg-[var(--card)] hover:border-[#0057b8] transition" data-prompt="Run live MCP check on active ServiceNow incidents for Order Service.">Live SNOW incident check</button>
+          <button type="button" class="ai-prompt-chip px-2.5 py-1 rounded-full text-xs border border-[var(--border)] bg-[var(--card)] hover:border-[#0057b8] transition" data-prompt="Run live tool check on active ServiceNow incidents for Order Service.">Live SNOW incident check</button>
           <button type="button" class="ai-prompt-chip px-2.5 py-1 rounded-full text-xs border border-[var(--border)] bg-[var(--card)] hover:border-[#0057b8] transition" data-prompt="Why did DAAIM infer a dependency between VM-ORD-DB-01 and Storage Account?">Explain AI-inferred edge</button>
         </div>
       </div>
@@ -870,8 +973,8 @@
       <!-- Conversation Log -->
       <div id="aiChatLog" class="flex-1 overflow-y-auto p-4 space-y-3 text-xs">
         <div class="bg-[var(--content)] border border-[var(--border)] rounded-xl p-3 space-y-1.5">
-          <div class="font-semibold text-[var(--foreground)]">DAAIM Agent Ready</div>
-          <p class="text-[var(--muted-foreground)] leading-relaxed">Ask about application dependencies, failure blast radius, DR runbook RTO/RPO, cyber security approvals, or open incidents. Every response shows its live MCP tool trace and grounded citations.</p>
+          <div class="font-semibold text-[var(--foreground)]">DAAIM AI Agent Ready</div>
+          <p class="text-[var(--muted-foreground)] leading-relaxed">Ask about application dependencies, failure blast radius, DR runbook RTO/RPO, cyber security approvals, or open incidents. Every response shows its live agentic tool trace and grounded citations.</p>
         </div>
       </div>
 
@@ -930,7 +1033,7 @@
                 id: 'customer_portal', name: 'Customer Portal', sub: 'Parent Application', category: 'parent',
                 x: 430, y: 26, w: 158, h: 52,
                 env: 'Production', owner: 'Jordan Lee (Digital Channels)', ci: 'CI: customer_portal',
-                host: 'AKS-FRONT-02', ip: '10.20.12.14', location: 'Azure East US', health: 'Healthy',
+                host: 'AKS-FRONT-02', ip: '10.20.12.14', location: 'Equinix DC1 (Dallas)', hosting: 'equinix', hosting: 'azure', health: 'Healthy',
                 hldStatus: 'Verified', drStatus: 'Verified', cyberStatus: 'Verified',
                 links: { snow: 'https://example.service-now.com/cmdb_ci?id=customer_portal', apm: '#', datadog: '#', azure: '#' },
                 incidents: []
@@ -939,7 +1042,7 @@
                 id: 'web_users', name: 'Web Users', sub: 'External', category: 'external',
                 x: 24, y: 122, w: 112, h: 50,
                 env: 'External', owner: 'External Public Traffic', ci: 'CI: ext_web_users',
-                host: 'Internet Edge', ip: '0.0.0.0/0', location: 'Global', health: 'Healthy',
+                host: 'Internet Edge', ip: '0.0.0.0/0', location: 'Internet', hosting: 'external', health: 'Healthy',
                 hldStatus: 'N/A', drStatus: 'N/A', cyberStatus: 'N/A',
                 links: { snow: '#', apm: '#', datadog: '#', azure: '#' },
                 incidents: []
@@ -948,7 +1051,7 @@
                 id: 'azure_front_door', name: 'Azure Front Door', sub: 'External', category: 'external',
                 x: 162, y: 122, w: 138, h: 50,
                 env: 'Production', owner: 'Cloud Edge Network Team', ci: 'CI: az_front_door_prod',
-                host: 'Azure Managed CDN/WAF', ip: '147.243.10.22', location: 'Azure Global', health: 'Healthy',
+                host: 'Azure Managed CDN/WAF', ip: '147.243.10.22', location: 'Global Edge POP', hosting: 'edge', health: 'Healthy',
                 hldStatus: 'Verified', drStatus: 'Verified', cyberStatus: 'Verified',
                 links: { snow: '#', apm: '#', datadog: '#', azure: '#' },
                 incidents: []
@@ -957,7 +1060,7 @@
                 id: 'app_gateway', name: 'Application Gateway', sub: 'Network', category: 'network',
                 x: 326, y: 122, w: 146, h: 50,
                 env: 'Production', owner: 'Network Core Ops', ci: 'CI: app_gw_core_01',
-                host: 'AGW-CORE-PROD', ip: '10.20.28.5', location: 'Azure East US', health: 'Healthy',
+                host: 'AGW-CORE-PROD', ip: '10.20.28.5', location: 'Azure East US', hosting: 'azure', health: 'Healthy',
                 hldStatus: 'Verified', drStatus: 'Verified', cyberStatus: 'Verified',
                 links: { snow: '#', apm: '#', datadog: '#', azure: '#' },
                 incidents: []
@@ -978,7 +1081,7 @@
                 id: 'redis_cache', name: 'Redis Cache', sub: 'Infrastructure', category: 'infrastructure',
                 x: 702, y: 122, w: 146, h: 50,
                 env: 'Production', owner: 'Data Caching Ops', ci: 'CI: redis_ord_prod_01',
-                host: 'AZ-REDIS-P2', ip: '10.20.31.18', location: 'Azure East US', health: 'Healthy',
+                host: 'AZ-REDIS-P2', ip: '10.20.31.18', location: 'Azure East US', hosting: 'azure', health: 'Healthy',
                 hldStatus: 'Missing', drStatus: 'Verified', cyberStatus: 'Verified',
                 links: { snow: '#', apm: '#', datadog: '#', azure: '#' },
                 incidents: [
@@ -989,7 +1092,7 @@
                 id: 'order_database', name: 'Order Database', sub: 'Database', category: 'database',
                 x: 342, y: 242, w: 148, h: 52,
                 env: 'Production', owner: 'Enterprise DBA Team', ci: 'CI: db_order_prod',
-                host: 'VM-ORD-DB-01', ip: '10.20.40.11', location: 'DC1', health: 'Healthy',
+                host: 'VM-ORD-DB-01', ip: '10.20.40.11', location: 'Equinix DC1 (Dallas)', hosting: 'equinix', health: 'Healthy',
                 hldStatus: 'Verified', drStatus: 'Verified', cyberStatus: 'Verified',
                 links: { snow: '#', apm: '#', datadog: '#', azure: '#' },
                 incidents: []
@@ -998,7 +1101,7 @@
                 id: 'messaging_kafka', name: 'Messaging (Kafka)', sub: 'Integration', category: 'integration',
                 x: 518, y: 242, w: 158, h: 52,
                 env: 'Production', owner: 'Event Streaming Platform', ci: 'CI: kafka_core_clus01',
-                host: 'KFK-BRK-01..03', ip: '10.20.44.10', location: 'DC1', health: 'Healthy',
+                host: 'KFK-BRK-01..03', ip: '10.20.44.10', location: 'AWS us-east-1 (MSK)', hosting: 'aws', health: 'Healthy',
                 hldStatus: 'Verified', drStatus: 'Verified', cyberStatus: 'Missing',
                 links: { snow: '#', apm: '#', datadog: '#', azure: '#' },
                 incidents: []
@@ -1007,7 +1110,7 @@
                 id: 'inventory_service', name: 'Inventory Service', sub: 'Application', category: 'application',
                 x: 704, y: 242, w: 156, h: 52,
                 env: 'Production', owner: 'Samira Chen (Commerce Platform)', ci: 'CI: inventory_service',
-                host: 'AKS-SUPPLY-01', ip: '10.20.36.88', location: 'Azure East US', health: 'Healthy',
+                host: 'AKS-SUPPLY-01', ip: '10.20.36.88', location: 'GCP us-central1 (GKE)', hosting: 'gcp', health: 'Healthy',
                 hldStatus: 'Verified', drStatus: 'Missing', cyberStatus: 'Verified',
                 links: { snow: '#', apm: '#', datadog: '#', azure: '#' },
                 incidents: []
@@ -1016,7 +1119,7 @@
                 id: 'sql_server_01', name: 'SQL Server 01', sub: 'Compute', category: 'infrastructure',
                 x: 266, y: 368, w: 142, h: 52,
                 env: 'Production', owner: 'Enterprise DBA Team', ci: 'CI: sql_srv_01_dc1',
-                host: 'DC1-RACK-B04', ip: '10.20.40.21', location: 'DC1', health: 'Healthy',
+                host: 'DC1-RACK-B04', ip: '10.20.40.21', location: 'Equinix DC1 (Dallas)', hosting: 'equinix', health: 'Healthy',
                 hldStatus: 'Verified', drStatus: 'Verified', cyberStatus: 'Verified',
                 links: { snow: '#', apm: '#', datadog: '#', azure: '#' },
                 incidents: []
@@ -1025,7 +1128,7 @@
                 id: 'vm_ord_db_01', name: 'VM-ORD-DB-01', sub: 'Compute (Parent Host)', category: 'infrastructure',
                 x: 468, y: 368, w: 162, h: 52,
                 env: 'Production', owner: 'Core Compute Infra', ci: 'CI: vm_ord_db_01',
-                host: 'ESX-DC1-H09', ip: '10.20.40.10', location: 'DC1', health: 'Healthy',
+                host: 'ESX-DC1-H09', ip: '10.20.40.10', location: 'Equinix DC1 (Dallas)', hosting: 'equinix', health: 'Healthy',
                 hldStatus: 'Verified', drStatus: 'Verified', cyberStatus: 'Verified',
                 links: { snow: '#', apm: '#', datadog: '#', azure: '#' },
                 incidents: []
@@ -1034,7 +1137,7 @@
                 id: 'storage_account', name: 'Storage Account', sub: 'Storage', category: 'infrastructure',
                 x: 706, y: 368, w: 152, h: 52,
                 env: 'Production', owner: '', ci: 'CI: st_ord_backup_01',
-                host: 'Azure Storage LRS', ip: '10.20.99.4', location: 'Azure East US', health: 'Warning',
+                host: 'Azure Storage LRS', ip: '10.20.99.4', location: 'Azure East US', hosting: 'azure', health: 'Warning',
                 hldStatus: 'Missing', drStatus: 'Verified', cyberStatus: 'Verified',
                 links: { snow: '#', apm: '#', datadog: '#', azure: '#' },
                 incidents: []
@@ -1075,14 +1178,14 @@
               {
                 id: 'ops_portal', name: 'Operations Portal', sub: 'Parent Application', category: 'parent',
                 x: 410, y: 28, w: 170, h: 52, env: 'Production', owner: 'Operations Digital Team', ci: 'CI: ops_portal_prod',
-                host: 'AKS-LOG-01', ip: '10.32.10.8', location: 'Azure Central US', health: 'Healthy',
+                host: 'AKS-LOG-01', ip: '10.32.10.8', location: 'Equinix DC2 (Chicago)', hosting: 'equinix', hosting: 'azure', health: 'Healthy',
                 hldStatus: 'Verified', drStatus: 'Verified', cyberStatus: 'Verified',
                 links: { snow: '#', apm: '#', datadog: '#', azure: '#' }, incidents: []
               },
               {
                 id: 'edge_gateway', name: 'Edge Telemetry Gateway', sub: 'Network', category: 'network',
                 x: 82, y: 142, w: 164, h: 52, env: 'Production', owner: '', ci: 'CI: edge_gw_dc2',
-                host: 'DC2-EDGE-04', ip: '10.32.18.40', location: 'DC2', health: 'Degraded',
+                host: 'DC2-EDGE-04', ip: '10.32.18.40', location: 'Site Edge (DC2)', hosting: 'edge', health: 'Degraded',
                 hldStatus: 'Missing', drStatus: 'Missing', cyberStatus: 'Verified',
                 links: { snow: '#', apm: '#', datadog: '#', azure: '#' },
                 incidents: [
@@ -1102,28 +1205,28 @@
               {
                 id: 'sap_erp_sync', name: 'SAP ERP Sync', sub: 'External', category: 'external',
                 x: 710, y: 142, w: 152, h: 52, env: 'Production', owner: 'ERP Integration CoE', ci: 'CI: sap_erp_ifc',
-                host: 'SAP-PI-01', ip: '10.30.5.12', location: 'DC1', health: 'Healthy',
+                host: 'SAP-PI-01', ip: '10.30.5.12', location: 'Equinix DC1 (Dallas)', hosting: 'equinix', health: 'Healthy',
                 hldStatus: 'Verified', drStatus: 'Verified', cyberStatus: 'Verified',
                 links: { snow: '#', apm: '#', datadog: '#', azure: '#' }, incidents: []
               },
               {
                 id: 'fulfill_oracle_db', name: 'Fulfillment Oracle DB', sub: 'Database', category: 'database',
                 x: 245, y: 288, w: 162, h: 52, env: 'Production', owner: 'Oracle DBA Group', ci: 'CI: ora_fulfill_prod',
-                host: 'EXADATA-DC2-01', ip: '10.32.50.11', location: 'DC2', health: 'Healthy',
+                host: 'EXADATA-DC2-01', ip: '10.32.50.11', location: 'Equinix DC2 (Chicago)', hosting: 'equinix', health: 'Healthy',
                 hldStatus: 'Verified', drStatus: 'Verified', cyberStatus: 'Verified',
                 links: { snow: '#', apm: '#', datadog: '#', azure: '#' }, incidents: []
               },
               {
                 id: 'rabbitmq_fulfill', name: 'RabbitMQ Broker', sub: 'Integration', category: 'integration',
                 x: 560, y: 288, w: 162, h: 52, env: 'Production', owner: 'Event Streaming Platform', ci: 'CI: rmq_fulfill_01',
-                host: 'VM-RMQ-04', ip: '10.32.55.9', location: 'DC2', health: 'Healthy',
+                host: 'VM-RMQ-04', ip: '10.32.55.9', location: 'AWS us-east-2', hosting: 'aws', health: 'Healthy',
                 hldStatus: 'Verified', drStatus: 'Verified', cyberStatus: 'Verified',
                 links: { snow: '#', apm: '#', datadog: '#', azure: '#' }, incidents: []
               },
               {
                 id: 'az_blob_archive', name: 'Cloud Event Archive', sub: 'Storage', category: 'infrastructure',
                 x: 560, y: 398, w: 178, h: 50, env: 'Production', owner: 'Core Operations Platform', ci: 'CI: az_fulfill_archive',
-                host: 'Azure Blob GRS', ip: '10.32.98.2', location: 'Azure Central US', health: 'Healthy',
+                host: 'Azure Blob GRS', ip: '10.32.98.2', location: 'Azure Central US', hosting: 'azure', health: 'Healthy',
                 hldStatus: 'Missing', drStatus: 'Verified', cyberStatus: 'Verified',
                 links: { snow: '#', apm: '#', datadog: '#', azure: '#' }, incidents: []
               }
@@ -1156,7 +1259,7 @@
               {
                 id: 'cloud_armor', name: 'Cloud Armor WAF', sub: 'Network', category: 'network',
                 x: 84, y: 146, w: 156, h: 52, env: 'Production', owner: 'Cloud Security Eng', ci: 'CI: gcp_waf_pay_01',
-                host: 'GCP Global LB', ip: '34.117.48.10', location: 'GCP us-central1', health: 'Healthy',
+                host: 'GCP Global LB', ip: '34.117.48.10', location: 'GCP us-central1', hosting: 'gcp', hosting: 'edge', health: 'Healthy',
                 hldStatus: 'Verified', drStatus: 'Verified', cyberStatus: 'Verified',
                 links: { snow: '#', apm: '#', datadog: '#', azure: '#' }, incidents: []
               },
@@ -1170,28 +1273,28 @@
               {
                 id: 'fraud_vertex', name: 'Fraud Engine (Vertex)', sub: 'Service', category: 'parent',
                 x: 626, y: 146, w: 172, h: 52, env: 'Production', owner: 'Risk ML Platform', ci: 'CI: fraud_vertex_ep',
-                host: 'Vertex AI Endpoint', ip: '10.60.20.8', location: 'GCP us-central1', health: 'Healthy',
+                host: 'Vertex AI Endpoint', ip: '10.60.20.8', location: 'GCP us-central1', hosting: 'gcp', health: 'Healthy',
                 hldStatus: 'Verified', drStatus: 'Verified', cyberStatus: 'Verified',
                 links: { snow: '#', apm: '#', datadog: '#', azure: '#' }, incidents: []
               },
               {
                 id: 'token_vault', name: 'PCI Token Vault', sub: 'Database', category: 'database',
                 x: 186, y: 296, w: 158, h: 52, env: 'Production', owner: 'Payments Security', ci: 'CI: vault_pci_01',
-                host: 'AlloyDB PCI HA', ip: '10.60.40.5', location: 'GCP us-central1', health: 'Healthy',
+                host: 'AlloyDB PCI HA', ip: '10.60.40.5', location: 'GCP us-central1', hosting: 'gcp', health: 'Healthy',
                 hldStatus: 'Verified', drStatus: 'Verified', cyberStatus: 'Verified',
                 links: { snow: '#', apm: '#', datadog: '#', azure: '#' }, incidents: []
               },
               {
                 id: 'ledger_pubsub', name: 'Ledger Pub/Sub', sub: 'Integration', category: 'integration',
                 x: 410, y: 296, w: 158, h: 52, env: 'Production', owner: 'FinTech Platform', ci: 'CI: gcp_ps_ledger',
-                host: 'Cloud Pub/Sub', ip: 'Private Google', location: 'GCP Multi-Region', health: 'Healthy',
+                host: 'Cloud Pub/Sub', ip: 'Private Google', location: 'GCP Multi-Region', hosting: 'gcp', health: 'Healthy',
                 hldStatus: 'Verified', drStatus: 'Verified', cyberStatus: 'Verified',
                 links: { snow: '#', apm: '#', datadog: '#', azure: '#' }, incidents: []
               },
               {
                 id: 'stripe_ext', name: 'Stripe Acquirer API', sub: 'External', category: 'external',
                 x: 632, y: 296, w: 164, h: 52, env: 'External', owner: 'External Processor', ci: 'CI: ext_stripe_api',
-                host: 'SaaS External', ip: '54.187.205.235', location: 'External', health: 'Healthy',
+                host: 'SaaS External', ip: '54.187.205.235', location: 'External SaaS', hosting: 'external', health: 'Healthy',
                 hldStatus: 'Verified', drStatus: 'Verified', cyberStatus: 'Verified',
                 links: { snow: '#', apm: '#', datadog: '#', azure: '#' }, incidents: []
               }
@@ -1233,13 +1336,13 @@
           },
           {
             id: 'doc_ord_cyber', appId: 'order_service', ciIds: ['order_service', 'azure_front_door'],
-            title: 'Order Service Cyber Security Approval (SAR-2026-114)',
+            title: 'Order Service Cyber Security Approval (SRA-2026-114)',
             source: 'SharePoint', docType: 'CYBER_APPROVAL', updated: '2026-04-02', stale: false,
             author: 'Cyber Architecture Team', acl: 'Security-Restricted ACL',
             summary: 'Signed Security Architecture Review approving TLS 1.3 ingress, WAF policies, and IAM scoping. Valid through April 2027.',
-            extracted: { approvalId: 'SAR-2026-114', status: 'Approved (Signed)', validUntil: '2027-04-02', approver: 'CISO AppSec Board' },
+            extracted: { approvalId: 'SRA-2026-114', status: 'Approved (Signed)', validUntil: '2027-04-02', approver: 'CISO AppSec Board' },
             chunks: [
-              'Approval Record SAR-2026-114: Order Service production deployment approved with zero open High/Critical findings. Annual re-certification due 2027-04-02.'
+              'Approval Record SRA-2026-114: Order Service production deployment approved with zero open High/Critical findings. Annual re-certification due 2027-04-02.'
             ]
           },
           {
@@ -1270,7 +1373,7 @@
             source: 'SharePoint', docType: 'CYBER_APPROVAL', updated: '2026-10-01', stale: false,
             author: 'Casey Rivera', acl: 'PCI-Restricted ACL',
             summary: 'Full QSA-verified PCI-DSS v4.0 architecture sign-off, tokenization boundaries, and Cloud Armor WAF controls.',
-            extracted: { approvalId: 'PCI-SAR-2026-089', status: 'Approved (Signed)', validUntil: '2027-10-01', approver: 'Global InfoSec & QSA' },
+            extracted: { approvalId: 'PCI-SRA-2026-089', status: 'Approved (Signed)', validUntil: '2027-10-01', approver: 'Global InfoSec & QSA' },
             chunks: [
               'PCI Scope Verification: Payment Gateway and AlloyDB Token Vault reside within isolated GCP VPC-SC perimeter with CMEK encryption and audited IAM.'
             ]
@@ -1307,8 +1410,8 @@
             id: 'gap_3', appId: 'order_service', ciId: 'messaging_kafka', ciName: 'Messaging (Kafka)',
             code: 'GAP_MISSING_CYBER', category: 'Cyber Approval', severity: 'Critical', status: 'Open',
             title: 'Missing Cyber Security Approval for Messaging (Kafka)',
-            detail: 'No active SAR / Cyber approval artifact linked for kafka_core_clus01 topic ACL and encryption configuration.',
-            remediation: 'Submit Security Architecture Review in SharePoint Governance library and link SAR ticket.'
+            detail: 'No active SRA / Cyber approval artifact linked for kafka_core_clus01 topic ACL and encryption configuration.',
+            remediation: 'Submit Security Risk Assessment (SRA) in SharePoint Governance library and link SRA ticket.'
           },
           {
             id: 'gap_4', appId: 'order_service', ciId: 'inventory_service', ciName: 'Inventory Service',
@@ -1321,14 +1424,14 @@
             id: 'gap_5', appId: 'fulfillment_core', ciId: 'fulfillment_core', ciName: 'Fulfillment Core Service',
             code: 'GAP_EXPIRED_CYBER', category: 'Cyber Approval', severity: 'Critical', status: 'Open',
             title: 'Cyber Security Approval expired in 2025 for Fulfillment Core',
-            detail: 'Last signed SAR expired 2025-11-30; annual Tier 1 re-certification overdue.',
+            detail: 'Last signed SRA expired 2025-11-30; annual Tier 1 re-certification overdue.',
             remediation: 'Initiate Cyber Security re-certification for Fulfillment Core Service.'
           },
           {
             id: 'gap_6', appId: 'fulfillment_core', ciId: 'fulfillment_core', ciName: 'Fulfillment Core Service',
             code: 'GAP_INCOMPLETE_DR', category: 'DR Runbook', severity: 'High', status: 'Open',
             title: 'DR runbook missing RTO/RPO targets and failover test evidence',
-            detail: 'Vertex AI semantic review of Fulfillment Core DR Procedure Draft flagged TBD placeholders for RTO/RPO and no DR test date.',
+            detail: 'AI semantic review of Fulfillment Core DR Procedure Draft flagged TBD placeholders for RTO/RPO and no DR test date.',
             remediation: 'Complete RTO/RPO section and upload signed DC2 failover drill report.'
           },
           {
@@ -1374,12 +1477,14 @@
         ],
 
         connectors: [
-          { name: 'ServiceNow CMDB & ITSM', phase: 'Phase 1', status: 'Connected', protocol: 'Pub/Sub + mcp-servicenow', cadence: 'Hourly Delta + Real-Time Webhooks', count: '25 CIs · 3 Tier 1 Apps' },
-          { name: 'Confluence Enterprise', phase: 'Phase 1', status: 'Connected', protocol: 'Pub/Sub + mcp-confluence', cadence: 'Incremental every 60m + Diagram OCR', count: '3 Spaces · Multimodal Indexed' },
-          { name: 'SharePoint Online (MS Graph)', phase: 'Phase 1', status: 'Connected', protocol: 'Pub/Sub + mcp-sharepoint', cadence: 'Delta Token Sync + Entra ACL Tags', count: '4 Libraries · DR & Cyber SARs' },
-          { name: 'Azure Resource Graph & GCP CAI', phase: 'Phase 2', status: 'Planned', protocol: 'Pub/Sub + mcp-cloud-discovery', cadence: 'Cloud vs CMDB Drift Detection', count: 'Ready to plug into Event Bus' },
-          { name: 'ServiceNow GRC / Wiz Security', phase: 'Phase 2', status: 'Planned', protocol: 'Pub/Sub + mcp-grc', cadence: 'Vulnerability & Live ATO Overlay', count: 'Ready to plug into Event Bus' },
-          { name: 'Datadog & Enterprise APM', phase: 'Phase 3', status: 'Planned', protocol: 'Pub/Sub + mcp-observability', cadence: 'Live Telemetry & Right-Sizing AI', count: 'Deep links active in Phase 1' }
+          { name: 'ServiceNow CMDB & ITSM', phase: 'Phase 1', status: 'Connected', protocol: 'Pub/Sub + tool-servicenow', cadence: 'Hourly Delta + Real-Time Webhooks', count: '25 CIs · 3 Tier 1 Apps' },
+          { name: 'Confluence Enterprise', phase: 'Phase 1', status: 'Connected', protocol: 'Pub/Sub + tool-confluence', cadence: 'Incremental every 60m + Diagram OCR', count: '3 Spaces · Multimodal Indexed' },
+          { name: 'SharePoint Online (MS Graph)', phase: 'Phase 1', status: 'Connected', protocol: 'Pub/Sub + tool-sharepoint', cadence: 'Delta Token Sync + Entra ACL Tags', count: '4 Libraries · DR & Cyber SRAs' },
+          { name: 'Azure Resource Graph & GCP CAI', phase: 'Phase 2', status: 'Planned', protocol: 'Pub/Sub + tool-cloud-discovery', cadence: 'Cloud vs CMDB Drift Detection', count: 'Ready to plug into Event Bus' },
+          { name: 'Security (Wiz & Brinqa)', phase: 'Phase 2', status: 'Planned', protocol: 'Pub/Sub + tool-security', cadence: 'Cloud Vulnerability, Exposure & Unified Risk Overlay', count: 'Wiz cloud posture + Brinqa risk findings' },
+          { name: 'Cyber (ThreatModeler & Archer)', phase: 'Phase 2', status: 'Planned', protocol: 'Pub/Sub + tool-cyber', cadence: 'Threat Models, SRA Approvals & GRC Risk Register', count: 'ThreatModeler diagrams + Archer SRA records' },
+          { name: 'Infrastructure Resource Inventory', phase: 'Phase 2', status: 'Planned', protocol: 'Pub/Sub + tool-resource-inventory', cadence: 'Infrastructure Resource, Host & Capacity Inventory', count: 'Resource deep links active in Phase 1' },
+          { name: 'Datadog Monitoring', phase: 'Phase 3', status: 'Planned', protocol: 'Pub/Sub + tool-datadog', cadence: 'Live Health, APM Latency & Utilisation Telemetry', count: 'Monitoring deep links active in Phase 1' }
         ]
       };
 
@@ -1398,6 +1503,7 @@
         filterEnv: 'ALL',
         filterType: 'ALL',
         filterOwner: 'ALL',
+        filterHosting: 'ALL',
         zoom: 1,
         panX: 0,
         panY: 0,
@@ -1449,6 +1555,26 @@
         el.classList.remove('hidden');
         clearTimeout(showToast._t);
         showToast._t = setTimeout(function () { el.classList.add('hidden'); }, 3200);
+      }
+
+      const HOSTING_META = {
+        equinix:  { label: 'Equinix',  color: '#e11d48' },
+        edge:     { label: 'Edge',     color: '#9333ea' },
+        aws:      { label: 'AWS',      color: '#f59e0b' },
+        azure:    { label: 'Azure',    color: '#0078d4' },
+        gcp:      { label: 'GCP',      color: '#16a34a' },
+        external: { label: 'External', color: '#94a3b8' }
+      };
+
+      function hostingMeta(code) {
+        return HOSTING_META[code] || HOSTING_META.external;
+      }
+
+      function hostingBadge(code) {
+        const m = hostingMeta(code);
+        return '<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded font-semibold" style="border:1.5px solid ' + m.color + ';background:color-mix(in srgb, ' + m.color + ' 12%, var(--card))">' +
+          '<span class="w-2 h-2 rounded-sm" style="background:' + m.color + '"></span>' +
+          '<span>' + m.label + '</span></span>';
       }
 
       function categoryColor(cat) {
@@ -1530,6 +1656,7 @@
         }
         if (state.filterOwner === 'ASSIGNED' && !n.owner) return false;
         if (state.filterOwner === 'MISSING' && n.owner) return false;
+        if (state.filterHosting !== 'ALL' && (n.hosting || 'external') !== state.filterHosting) return false;
 
         if (state.overlay === 'gaps' && getNodeGaps(n.id).length === 0) return false;
         if (state.overlay === 'incidents' && (!n.incidents || n.incidents.length === 0)) return false;
@@ -1568,7 +1695,9 @@
           const isDimmed = !passes || (state.overlay === 'all' && state.selectedNodeId !== app.rootNodeId && !connectedIds.has(n.id));
 
           const div = document.createElement('div');
-          div.className = 'graph-node cat-' + n.category + (isSelected ? ' selected' : '') + (isDimmed ? ' dimmed' : '');
+          const hostCode = n.hosting || 'external';
+          div.className = 'graph-node cat-' + n.category + ' host-' + hostCode + (isSelected ? ' selected' : '') + (isDimmed ? ' dimmed' : '');
+          div.title = n.name + ' — Hosted on ' + hostingMeta(hostCode).label + ' (' + n.location + ')';
           div.dataset.nodeId = n.id;
           div.style.left = n.x + 'px';
           div.style.top = n.y + 'px';
@@ -1642,7 +1771,8 @@
           const path = document.createElementNS(ns, 'path');
           path.setAttribute('d', geom.d);
           path.setAttribute('class', 'edge-path' + (isAi ? ' edge-ai' : ''));
-          const stroke = isAi ? '#0d9488' : (isIncidentToSelected ? '#0057b8' : (isBi ? '#1d63dc' : '#64748b'));
+          const isDarkTheme = document.documentElement.classList.contains('dark');
+          const stroke = isAi ? (isDarkTheme ? '#2dd4bf' : '#0d9488') : (isIncidentToSelected ? (isDarkTheme ? '#60a5fa' : '#0057b8') : (isBi ? (isDarkTheme ? '#60a5fa' : '#1d63dc') : (isDarkTheme ? '#94a3b8' : '#64748b')));
           path.setAttribute('stroke', stroke);
           path.setAttribute('stroke-width', isIncidentToSelected || isAi ? '2.2' : '1.6');
           path.setAttribute('opacity', (state.overlay === 'ai' && !isAi) ? '0.18' : (isIncidentToSelected || state.selectedNodeId === app.rootNodeId ? '0.92' : '0.32'));
@@ -1802,13 +1932,7 @@
           edge.label = 'Confirmed (HITL)';
           edge.status = 'ARCHITECT_CONFIRMED';
           document.getElementById('edgePopover').classList.add('hidden');
-          document.getElementById('btnToggleTheme').addEventListener('click', function () {
-        const isDark = document.documentElement.classList.toggle('dark');
-        document.getElementById('themeIcon').innerHTML = isDark ? '&#9728;' : '&#9790;';
-        document.getElementById('themeLabel').textContent = isDark ? 'Light' : 'Dark';
-      });
-
-      renderAll();
+          renderAll();
           showToast('AI-inferred dependency confirmed and logged for ServiceNow CMDB review.');
         }
       });
@@ -1925,6 +2049,7 @@
             ['Cyber Approval', statusBadge(node.cyberStatus)],
             ['VM / Parent Host', '<span class="font-mono">' + escHtml(node.host) + '</span>'],
             ['IP Address', '<span class="font-mono">' + escHtml(node.ip) + '</span>'],
+            ['Hosted On', hostingBadge(node.hosting || 'external')],
             ['Location', escHtml(node.location)]
           ];
 
@@ -1991,11 +2116,11 @@
             body.innerHTML = '<div class="rounded-lg border border-[#ea580c]/35 bg-[#ea580c]/10 p-3 space-y-2">' +
               '<div class="font-semibold text-[#c2410c]">No Linked Documentation Found</div>' +
               '<p class="text-[var(--muted-foreground)]">Confluence &amp; SharePoint scraping found zero verified design diagrams or runbooks tagged for <strong>' + escHtml(node.name) + '</strong>.</p>' +
-              '<button type="button" id="btnTriggerDocSearch" class="px-2.5 py-1.5 rounded-lg bg-[#0057b8] text-white font-semibold">Run Live MCP Doc Search</button>' +
+              '<button type="button" id="btnTriggerDocSearch" class="px-2.5 py-1.5 rounded-lg bg-[#0057b8] text-white font-semibold">Run Live AI Doc Search</button>' +
             '</div>';
             const btn = document.getElementById('btnTriggerDocSearch');
             if (btn) btn.addEventListener('click', function () {
-              openAiDrawerWithPrompt('Search Confluence and SharePoint via MCP for missing documentation on ' + node.name + '.');
+              openAiDrawerWithPrompt('Search Confluence and SharePoint via live tool search for missing documentation on ' + node.name + '.');
             });
           } else {
             body.innerHTML = '<div class="space-y-2.5">' + docs.map(function (d) {
@@ -2155,6 +2280,7 @@
           }
           if (state.filterOwner === 'ASSIGNED' && !item.node.owner) return false;
           if (state.filterOwner === 'MISSING' && item.node.owner) return false;
+          if (state.filterHosting !== 'ALL' && (item.node.hosting || 'external') !== state.filterHosting) return false;
           return true;
         });
 
@@ -2166,6 +2292,7 @@
             '<td class="px-4 py-3 font-semibold">' + escHtml(n.name) + '<div class="font-mono text-[var(--muted-foreground)] font-normal">' + escHtml(n.ci) + '</div></td>' +
             '<td class="px-4 py-3">' + escHtml(item.app.name) + '</td>' +
             '<td class="px-4 py-3">' + escHtml(n.sub) + '</td>' +
+            '<td class="px-4 py-3">' + hostingBadge(n.hosting || 'external') + '</td>' +
             '<td class="px-4 py-3">' + (n.owner ? escHtml(n.owner) : '<span class="text-[#dc2626] font-semibold">Missing Owner</span>') + '</td>' +
             '<td class="px-4 py-3">' + statusBadge(n.hldStatus) + '</td>' +
             '<td class="px-4 py-3">' + statusBadge(n.drStatus) + '</td>' +
@@ -2360,7 +2487,7 @@
                 healthRow('Cloud Pub/Sub Event Bus', '99.98% delivery · 0 DLQ messages', 'Healthy') +
                 healthRow('PostgreSQL + pgvector RAG Store', 'p95 query 24ms · 1,420 embedded chunks', 'Healthy') +
                 healthRow('Vertex AI Gemini 2.5 (Flash / Pro)', 'Multimodal diagram parser active', 'Healthy') +
-                healthRow('Cloud Run MCP Server Mesh', '4 Phase 1 read-only MCP servers online', 'Healthy') +
+                healthRow('Agentic Tool Connector Mesh (Cloud Run)', '4 Phase 1 read-only tool connectors online', 'Healthy') +
               '</div>' +
             '</div>' +
           '</div>';
@@ -2384,7 +2511,7 @@
       function renderSettingsView() {
         document.getElementById('settingsContent').innerHTML =
           '<div class="surface-card border rounded-xl p-4 space-y-3 text-xs">' +
-            '<h3 class="text-sm font-bold">Enterprise Ingestion Connectors &amp; MCP Mesh</h3>' +
+            '<h3 class="text-sm font-bold">Enterprise Ingestion Connectors &amp; Agentic Tool Mesh</h3>' +
             '<div class="space-y-2.5">' +
               DATA.connectors.map(function (c) {
                 const live = c.status === 'Connected';
@@ -2405,7 +2532,7 @@
               policyToggle('Require Architecture Design / Diagram (HLD)', 'Flag Critical gap when zero diagrams map to a Tier 1 app or infrastructure node', true) +
               policyToggle('Diagram Freshness SLA (12 Months)', 'Trigger AI Recommendation when Confluence/diagram date exceeds 12 months', true) +
               policyToggle('Require Validated DR Runbook (RTO/RPO)', 'Verify DR document exists AND contains explicit RTO, RPO, and test date', true) +
-              policyToggle('Require Signed Cyber Security Approval (SAR)', 'Flag missing or expired Cyber Approval across SharePoint governance libraries', true) +
+              policyToggle('Require Signed Cyber Security Approval (SRA)', 'Flag missing or expired Cyber Approval across SharePoint governance libraries', true) +
               policyToggle('Enforce Source Document ACL Mirroring', 'Filter pgvector RAG chunks by user Entra ID group claims prior to LLM synthesis', true) +
             '</div>' +
           '</div>';
@@ -2472,7 +2599,7 @@
         const timings = [
           { idx: 0, delay: 100, msg: 'Fetching Tier 1 CIs...' },
           { idx: 1, delay: 950, msg: 'Scraping Docs + OCR...' },
-          { idx: 2, delay: 1900, msg: 'Vertex AI + MCP Audit...' },
+          { idx: 2, delay: 1900, msg: 'Agentic AI Audit...' },
           { idx: 3, delay: 2950, msg: 'Updating Map & Cache...' }
         ];
 
@@ -2498,7 +2625,7 @@
           state.syncCount += 1;
           document.getElementById('lastSyncText').textContent = 'Just now';
           pipelineBusy = false;
-          showToast('Pub/Sub + Vertex AI RAG/MCP sync completed: 25 CIs, 7 docs, and ' + getOpenGaps().length + ' gaps verified.');
+          showToast('Pub/Sub + Agentic AI sync completed: 25 CIs, 7 docs, and ' + getOpenGaps().length + ' gaps verified.');
         }, 3850);
       }
 
@@ -2508,7 +2635,7 @@
       });
 
       // =========================================================================
-      // 10. ASK DAAIM AI AGENT DRAWER (SIMULATED VERTEX AI + MCP TRACE)
+      // 10. ASK DAAIM AI AGENT DRAWER
       // =========================================================================
       function openAiDrawer() {
         document.getElementById('aiDrawerBackdrop').classList.remove('hidden');
@@ -2522,7 +2649,7 @@
         const q = query.toLowerCase();
         if (q.includes('vm-ord-db-01') || q.includes('blast radius')) {
           return {
-            tools: ['mcp-daaim-graph.get_app_subgraph("order_service", depth=3)', 'mcp-daaim-graph.search_rag_docs_acl("VM-ORD-DB-01 DR")'],
+            tools: ['tool-daaim-graph.get_app_subgraph("order_service", depth=3)', 'tool-daaim-graph.search_rag_docs_acl("VM-ORD-DB-01 DR")'],
             answer: 'If **VM-ORD-DB-01** (`10.20.40.10`, DC1) fails, **Order Database** is directly impacted, cascading upstream to **Order Service** and **Customer Portal** (Tier 1 Revenue Critical). **SQL Server 01** serves as a bidirectional synchronous replica, and **Storage Account (`st_ord_backup_01`)** receives WAL archives via an AI-inferred backup link.\n\n**Recovery Posture:** Verified DR Runbook v2.4 confirms **RTO 15 min / RPO 5 min** (last tested 2026-08-29). Note: `st_ord_backup_01` currently lacks a defined CMDB owner.',
             citations: ['Order Service DR Failover Runbook v2.4 (SharePoint)', 'ServiceNow CMDB Graph (CI: vm_ord_db_01)']
           };
@@ -2531,27 +2658,27 @@
           const open = getOpenGaps();
           const crit = open.filter(function (g) { return g.severity === 'Critical'; });
           return {
-            tools: ['mcp-daaim-graph.get_ci_gaps(tier=1, status="Open")', 'mcp-sharepoint.graph_search_files("SAR OR DR Runbook")'],
+            tools: ['tool-daaim-graph.get_ci_gaps(tier=1, status="Open")', 'tool-sharepoint.graph_search_files("SRA OR DR Runbook")'],
             answer: 'Across our 3 Tier 1 applications, DAAIM currently flags **' + open.length + ' open governance gaps** (**' + crit.length + ' Critical**):\n• **Order Service:** Missing HLD diagram for `Redis Cache`, missing Cyber Approval for `Messaging (Kafka)`, missing DR Runbook for `Inventory Service`, and undefined owner on `Storage Account`.\n• **Fulfillment Core Service:** Cyber Approval expired in 2025, DR Runbook is missing formal RTO/RPO targets, and `Edge Telemetry Gateway` has no owner during an active P1.\n• **Payment Gateway:** 0 open gaps (PCI-DSS v4.0 verified).',
             citations: ['Tier 1 Compliance Policy Engine', 'SharePoint Governance Library (ACL-Checked)']
           };
         }
         if (q.includes('incident') || q.includes('servicenow') || q.includes('snow')) {
           return {
-            tools: ['mcp-servicenow.list_active_incidents(app="order_service")', 'mcp-daaim-graph.get_app_subgraph("order_service", depth=2)'],
+            tools: ['tool-servicenow.list_active_incidents(app="order_service")', 'tool-daaim-graph.get_app_subgraph("order_service", depth=2)'],
             answer: 'Live ServiceNow check returned **2 active incidents** on **Order Service**:\n• **INC0048291 (P2 - High):** Intermittent checkout latency > 2.4s during peak batch load (Assigned: Core Platform SRE, 42m ago).\n• **INC0048315 (P3 - Moderate):** Redis cache miss rate elevated above 18% threshold on `redis_ord_prod_01` (2h ago).\n\n**Correlation Hint:** Both incidents converge on the `Order Service <-> Redis Cache` dependency path. Note that `Redis Cache` currently has no architecture diagram indexed.',
-            citations: ['Live ServiceNow API via mcp-servicenow', 'Order Service Topology Graph']
+            citations: ['Live ServiceNow API via Tool Mesh', 'Order Service Topology Graph']
           };
         }
         if (q.includes('infer') || q.includes('storage account')) {
           return {
-            tools: ['mcp-daaim-graph.get_edge_evidence("vm_ord_db_01", "storage_account")', 'Vertex AI Gemini 2.5 Pro'],
+            tools: ['tool-daaim-graph.get_edge_evidence("vm_ord_db_01", "storage_account")', 'Vertex AI Gemini 2.5 Pro'],
             answer: 'DAAIM inferred the dotted-green dependency **VM-ORD-DB-01 → Storage Account** with **87% confidence** because **Section 4.2** of *Order Service DR Failover Runbook v2.4* documents continuous SQL transaction log archival from `VM-ORD-DB-01` to `st_ord_backup_01`, yet no `cmdb_rel_ci` relationship exists in ServiceNow.\n\nYou can click the green dashed arrow on the map canvas to **Confirm as Valid** or **Dismiss**.',
             citations: ['Order Service DR Failover Runbook v2.4 (Chunk #2)', 'ServiceNow CMDB Diff Check']
           };
         }
         return {
-          tools: ['mcp-daaim-graph.search_rag_docs_acl("' + query.slice(0, 36) + '")', 'mcp-confluence.cql_search_pages', 'Vertex AI Gemini 2.5 Pro'],
+          tools: ['tool-daaim-graph.search_rag_docs_acl("' + query.slice(0, 36) + '")', 'tool-confluence.cql_search_pages', 'Vertex AI Gemini 2.5 Pro'],
           answer: 'Searched the unified **PostgreSQL + pgvector** graph and Confluence/SharePoint corpus for **"' + query + '"** under your Entra ID ACL scope.\n\nCurrently viewing **' + getApp().name + '** (' + getApp().nodes.length + ' mapped CIs, ' + getOpenGaps(getApp().id).length + ' open gaps). Try asking specifically about **blast radius**, **DR/Cyber gaps**, **live ServiceNow incidents**, or **AI-inferred edges** for a deep drill-down.',
           citations: ['DAAIM Hybrid RAG Index', 'ServiceNow CMDB Snapshot']
         };
@@ -2568,7 +2695,7 @@
 
         const thinking = document.createElement('div');
         thinking.className = 'mr-6 rounded-xl bg-[var(--content)] border border-[var(--border)] p-3 space-y-1.5';
-        thinking.innerHTML = '<div class="font-semibold text-[#0057b8]">Invoking Vertex AI + MCP tools...</div><div class="font-mono text-[var(--muted-foreground)]">Querying mcp-daaim-graph &amp; enterprise sources...</div>';
+        thinking.innerHTML = '<div class="font-semibold text-[#0057b8]">Invoking Agentic AI tools...</div><div class="font-mono text-[var(--muted-foreground)]">Querying agentic tool mesh &amp; enterprise sources...</div>';
         log.appendChild(thinking);
         log.scrollTop = log.scrollHeight;
 
@@ -2581,7 +2708,7 @@
 
           thinking.innerHTML =
             '<div class="space-y-1 pb-2 border-b border-[var(--border)]">' +
-              '<div class="text-[11px] font-semibold uppercase tracking-wider text-[var(--muted-foreground)]">MCP Tool Execution Trace</div>' +
+              '<div class="text-[11px] font-semibold uppercase tracking-wider text-[var(--muted-foreground)]">Agentic Tool Execution Trace</div>' +
               res.tools.map(function (t) {
                 return '<div class="font-mono text-[11px] text-[#0f766e]">&#10003; ' + escHtml(t) + '</div>';
               }).join('') +
@@ -2727,8 +2854,9 @@
         const edgeMarkup = document.getElementById('edgeSvg').innerHTML;
         const nodeMarkup = app.nodes.map(function (n) {
           const accent = categoryColor(n.category);
+          const hostStroke = hostingMeta(n.hosting || 'external').color;
           return '<g transform="translate(' + n.x + ',' + n.y + ')">' +
-            '<rect width="' + n.w + '" height="' + n.h + '" rx="8" fill="#ffffff" stroke="' + accent + '" stroke-width="1.8"/>' +
+            '<rect width="' + n.w + '" height="' + n.h + '" rx="8" fill="#ffffff" stroke="' + hostStroke + '" stroke-width="2.6"/>' +
             '<rect x="8" y="12" width="10" height="26" rx="3" fill="' + accent + '"/>' +
             '<text x="26" y="24" font-family="sans-serif" font-size="11" font-weight="bold" fill="#0f172a">' + escHtml(n.name) + '</text>' +
             '<text x="26" y="39" font-family="sans-serif" font-size="10" fill="#475569">' + escHtml(n.sub) + '</text>' +
@@ -2784,12 +2912,38 @@
         renderGraph();
       });
 
+      function setHostingFilter(val) {
+        state.filterHosting = val;
+        document.getElementById('filterHosting').value = val;
+        document.querySelectorAll('[data-host-filter]').forEach(function (btn) {
+          btn.classList.toggle('active', btn.dataset.hostFilter === val);
+        });
+        document.getElementById('clearHostLegendBtn').classList.toggle('hidden', val === 'ALL');
+        renderGraph();
+        renderListView();
+      }
+
       ['filterEnv', 'filterType', 'filterOwner'].forEach(function (id) {
         document.getElementById(id).addEventListener('change', function (e) {
           state[id] = e.target.value;
           renderGraph();
           renderListView();
         });
+      });
+
+      document.getElementById('filterHosting').addEventListener('change', function (e) {
+        setHostingFilter(e.target.value);
+      });
+
+      document.querySelectorAll('[data-host-filter]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          const target = btn.dataset.hostFilter;
+          setHostingFilter(state.filterHosting === target ? 'ALL' : target);
+        });
+      });
+
+      document.getElementById('clearHostLegendBtn').addEventListener('click', function () {
+        setHostingFilter('ALL');
       });
 
       document.getElementById('docSourceFilter').addEventListener('change', renderDocsView);
@@ -2851,6 +3005,25 @@
         renderInsightsView();
         renderSettingsView();
       }
+
+      function applyTheme(isDark, announce) {
+        document.documentElement.classList.toggle('dark', isDark);
+        document.getElementById('themeIcon').innerHTML = isDark ? '&#9728;' : '&#9790;';
+        document.getElementById('themeLabel').textContent = isDark ? 'Light Mode' : 'Dark Mode';
+        try { localStorage.setItem('daaim_theme', isDark ? 'dark' : 'light'); } catch (_) {}
+        renderEdges();
+        if (announce) showToast(isDark ? 'Switched to Dark Mode' : 'Switched to Light Mode');
+      }
+
+      document.getElementById('btnToggleTheme').addEventListener('click', function () {
+        applyTheme(!document.documentElement.classList.contains('dark'), true);
+      });
+
+      try {
+        if (localStorage.getItem('daaim_theme') === 'dark') {
+          applyTheme(true, false);
+        }
+      } catch (_) {}
 
       renderAll();
       setTimeout(fitCanvas, 40);
