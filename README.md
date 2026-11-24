@@ -1,31 +1,17 @@
-# Dynamic Architecture AI Map (DAAIM) — Interactive Concept Demo
+# Sysco Dynamic Architecture AI Map (DAAIM) — Interactive Demo v2
 
-A self-contained, offline-ready interactive prototype illustrating how an enterprise can unify CMDB topology (e.g., ServiceNow), distributed documentation (Confluence & SharePoint), and Cloud AI (GCP Pub/Sub + AlloyDB/Cloud SQL `pgvector` + Vertex AI RAG/MCP) into a single living architecture map with automated compliance gap detection.
-
-> **Note:** All application names, CI identifiers, IP addresses, incidents, people, and documents in this demo are 100% synthetic sample data for concept demonstration purposes.
+Self-contained, 100% offline interactive demo of **DAAIM** aligned to the GCP architecture design (Cloud Run + Cloud Pub/Sub + AlloyDB/Cloud SQL `pgvector` + **SAGE — Sysco Agentic AI Platform**).
 
 ## Quick Start (No Server or Internet Required)
 
-1. Unzip `daaim-public-demo.zip`.
-2. Double-click **`index.html`** to open it directly in Chrome, Edge, Firefox, or Safari.
-3. All assets (`assets/tailwindcss.min.js`) are bundled locally — zero external CDN dependencies.
+1. Unzip this archive.
+2. Double-click **`index.html`** to open in Chrome, Edge, Firefox, or Safari.
+3. All dependencies (`assets/tailwindcss.min.js`) are bundled locally — works completely offline behind corporate firewalls, with a working **Dark Mode / Light Mode** toggle in the header.
 
-*(Optional)* Serve locally over HTTP:
-```bash
-python3 -m http.server 8080
-```
-Then open `http://localhost:8080`.
+## Highlights in v2
 
-## Package Contents
-
-- `index.html` — Interactive DAAIM web prototype (includes Light & Dark mode toggle).
-- `assets/tailwindcss.min.js` — Local offline Tailwind runtime.
-- `docs/daaim_architecture_design_doc.md` — Reference GCP architecture and system design document with Mermaid diagrams.
-
-## Demo Walkthrough
-
-1. **Interactive Topology (`Map View`):** Click any node (`Order Service`, `Redis Cache`, `Storage Account`), drag nodes around, switch layouts (`Layered`, `Blast Radius`, `Compact Grid`), filter by `Highlight: Gaps Only`, or export the diagram as SVG/JSON.
-2. **AI-Inferred Dependency Review:** Click the dashed green arrow (`VM-ORD-DB-01 → Storage Account`) to inspect the AI-extracted evidence and test **Confirm as Valid** or **Dismiss**.
-3. **Simulated Event Pipeline:** Click **Simulate Pub/Sub + AI Sync** in the header to step through CMDB sync, documentation scraping, Vertex AI + MCP correlation, and live map updates.
-4. **Live RAG + MCP Assistant:** Click **Ask DAAIM Agent** (or the **Faster Issue Resolution** card) and try the built-in prompts for blast radius, DR/Cyber gaps, or live incident checks.
-5. **Governance & Portfolio Views:** Switch between `Order Service`, `Fulfillment Core`, and `Payment Gateway`, and explore **Missing Info & Gaps** (with Resolve / 90d Waiver actions), **Documentation** (with RAG chunk previews), **Insights**, and **Connectors & Policy**.
+- **Executive Dashboard:** KPIs, Architecture Health meters, interactive Estate Domain Map, Top AI Recommendations, Risk Hotspots, Quick Ask SAGE box, and Report Export.
+- **Business-User Navigation:** Grouped into Overview, Governance & Assurance, and Platform.
+- **Human-in-the-Loop (HITL) Verification:** Amber `?` badges on nodes missing docs/owners, inline Inspector verification actions (Attach Doc / Assign Owner / Mark N/A / 90d Waiver), and centralized `Governance & HITL` queue with audit history.
+- **Hosted On (Box Outline) Legend:** Color-coded 2.5px node outlines for **Equinix**, **Edge**, **AWS**, **Azure**, and **GCP**, with all hosting locations in **Europe (Amsterdam & Dublin)**.
+- **Updated Connectors & Deep Links:** `Illumio / Tufin` (Network Flow Approval), `Infralens` (Infra Inventory), `Wiz & Brinqa` (Security), `ThreatModeler & Archer` (Cyber SRA), and `Datadog` (Monitoring); inspector deep links to ServiceNow CMDB, Infralens, and Datadog.
