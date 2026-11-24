@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sysco DAAIM — Dynamic Architecture AI Map</title>
+  <title>DAAIM — Dynamic Architecture AI Map</title>
   <meta name="description" content="Interactive enterprise architecture map unifying ServiceNow CMDB, Confluence, SharePoint, and Vertex AI RAG/MCP gap intelligence." />
   <script src="./assets/tailwindcss.min.js"></script>
   <style>
@@ -61,7 +61,7 @@
 
     /* Brand Header Band */
     .brand-bar {
-      background: linear-gradient(90deg, #003a70 0%, #0057b8 62%, #0072ce 100%);
+      background: linear-gradient(90deg, #0f172a 0%, #1e3a5f 62%, #0284c7 100%);
       color: #ffffff;
     }
 
@@ -260,7 +260,7 @@
       </div>
       <div>
         <div class="flex items-center gap-2">
-          <h1 class="text-sm sm:text-base font-semibold tracking-tight leading-tight">Sysco Dynamic Architecture AI Map (DAAIM)</h1>
+          <h1 class="text-sm sm:text-base font-semibold tracking-tight leading-tight">Dynamic Architecture AI Map (DAAIM)</h1>
           <span class="hidden md:inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-white/15 border border-white/20">GCP + Vertex AI MCP Demo</span>
         </div>
         <p class="text-xs text-white/80 hidden sm:block">Live ServiceNow CMDB topology unified with Confluence &amp; SharePoint documentation, gap intelligence, and AI recommendations</p>
@@ -342,7 +342,7 @@
           <label for="appSelect" class="block text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)] px-1">Tier 1 Application</label>
           <select id="appSelect" class="w-full rounded-lg border border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] px-2.5 py-2 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
             <option value="order_service">Order Service (Prod)</option>
-            <option value="wms_core">WMS Core Logistics (Prod)</option>
+            <option value="fulfillment_core">Fulfillment Core (Prod)</option>
             <option value="payment_gateway">Payment Gateway (PCI)</option>
           </select>
         </div>
@@ -422,7 +422,7 @@
           <span class="font-mono text-[#16a34a] font-semibold">pgvector OK</span>
         </div>
         <div class="pt-1 text-[var(--muted-foreground)] leading-snug">
-          <div class="font-semibold text-[var(--foreground)]">Sysco Architecture Office</div>
+          <div class="font-semibold text-[var(--foreground)]">Enterprise Architecture Office</div>
           <div>Phase 1 MVP · Read-Only Mode</div>
         </div>
       </div>
@@ -436,7 +436,7 @@
         <!-- Mobile App Selector -->
         <select id="appSelectMobile" class="md:hidden rounded-lg border border-[var(--border)] bg-[var(--content)] text-[var(--foreground)] px-2.5 py-1.5 text-xs font-semibold">
           <option value="order_service">Order Service</option>
-          <option value="wms_core">WMS Core</option>
+          <option value="fulfillment_core">Fulfillment Core</option>
           <option value="payment_gateway">Payment Gateway</option>
         </select>
 
@@ -922,17 +922,17 @@
             rootNodeId: 'order_service',
             tier: 'Tier 1 Critical',
             environment: 'Production',
-            owner: 'John Smith (Retail Platform Team)',
+            owner: 'Alex Morgan (Core Platform Team)',
             health: 'Healthy',
             description: 'Core customer order orchestration, validation, and fulfillment dispatch service.',
             nodes: [
               {
                 id: 'customer_portal', name: 'Customer Portal', sub: 'Parent Application', category: 'parent',
                 x: 430, y: 26, w: 158, h: 52,
-                env: 'Production', owner: 'Sarah Jenkins (Digital Channels)', ci: 'CI: customer_portal',
+                env: 'Production', owner: 'Jordan Lee (Digital Channels)', ci: 'CI: customer_portal',
                 host: 'AKS-FRONT-02', ip: '10.20.12.14', location: 'Azure East US', health: 'Healthy',
                 hldStatus: 'Verified', drStatus: 'Verified', cyberStatus: 'Verified',
-                links: { snow: 'https://sysco.service-now.com/cmdb_ci?id=customer_portal', infralens: '#', datadog: '#', azure: '#' },
+                links: { snow: 'https://example.service-now.com/cmdb_ci?id=customer_portal', apm: '#', datadog: '#', azure: '#' },
                 incidents: []
               },
               {
@@ -941,7 +941,7 @@
                 env: 'External', owner: 'External Public Traffic', ci: 'CI: ext_web_users',
                 host: 'Internet Edge', ip: '0.0.0.0/0', location: 'Global', health: 'Healthy',
                 hldStatus: 'N/A', drStatus: 'N/A', cyberStatus: 'N/A',
-                links: { snow: '#', infralens: '#', datadog: '#', azure: '#' },
+                links: { snow: '#', apm: '#', datadog: '#', azure: '#' },
                 incidents: []
               },
               {
@@ -950,27 +950,27 @@
                 env: 'Production', owner: 'Cloud Edge Network Team', ci: 'CI: az_front_door_prod',
                 host: 'Azure Managed CDN/WAF', ip: '147.243.10.22', location: 'Azure Global', health: 'Healthy',
                 hldStatus: 'Verified', drStatus: 'Verified', cyberStatus: 'Verified',
-                links: { snow: '#', infralens: '#', datadog: '#', azure: '#' },
+                links: { snow: '#', apm: '#', datadog: '#', azure: '#' },
                 incidents: []
               },
               {
                 id: 'app_gateway', name: 'Application Gateway', sub: 'Network', category: 'network',
                 x: 326, y: 122, w: 146, h: 50,
-                env: 'Production', owner: 'Network Core Ops', ci: 'CI: app_gw_retail_01',
-                host: 'AGW-RETAIL-PROD', ip: '10.20.28.5', location: 'Azure East US', health: 'Healthy',
+                env: 'Production', owner: 'Network Core Ops', ci: 'CI: app_gw_core_01',
+                host: 'AGW-CORE-PROD', ip: '10.20.28.5', location: 'Azure East US', health: 'Healthy',
                 hldStatus: 'Verified', drStatus: 'Verified', cyberStatus: 'Verified',
-                links: { snow: '#', infralens: '#', datadog: '#', azure: '#' },
+                links: { snow: '#', apm: '#', datadog: '#', azure: '#' },
                 incidents: []
               },
               {
                 id: 'order_service', name: 'Order Service', sub: 'Application', category: 'application',
                 x: 498, y: 120, w: 158, h: 54,
-                env: 'Production', owner: 'John Smith (Retail Platform Team)', ci: 'CI: order_service',
+                env: 'Production', owner: 'Alex Morgan (Core Platform Team)', ci: 'CI: order_service',
                 host: 'VM-HOST-01', ip: '10.20.30.45', location: 'DC1', health: 'Healthy',
                 hldStatus: 'Stale (2023)', drStatus: 'Verified', cyberStatus: 'Verified',
-                links: { snow: '#', infralens: '#', datadog: '#', azure: '#' },
+                links: { snow: '#', apm: '#', datadog: '#', azure: '#' },
                 incidents: [
-                  { number: 'INC0048291', priority: 'P2 - High', state: 'In Progress', title: 'Intermittent checkout latency > 2.4s during peak batch load', group: 'Retail Platform SRE', opened: '42m ago' },
+                  { number: 'INC0048291', priority: 'P2 - High', state: 'In Progress', title: 'Intermittent checkout latency > 2.4s during peak batch load', group: 'Core Platform SRE', opened: '42m ago' },
                   { number: 'INC0048315', priority: 'P3 - Moderate', state: 'Acknowledged', title: 'Redis cache miss rate elevated above 18% threshold', group: 'Data Caching Ops', opened: '2h ago' }
                 ]
               },
@@ -980,7 +980,7 @@
                 env: 'Production', owner: 'Data Caching Ops', ci: 'CI: redis_ord_prod_01',
                 host: 'AZ-REDIS-P2', ip: '10.20.31.18', location: 'Azure East US', health: 'Healthy',
                 hldStatus: 'Missing', drStatus: 'Verified', cyberStatus: 'Verified',
-                links: { snow: '#', infralens: '#', datadog: '#', azure: '#' },
+                links: { snow: '#', apm: '#', datadog: '#', azure: '#' },
                 incidents: [
                   { number: 'INC0048315', priority: 'P3 - Moderate', state: 'Acknowledged', title: 'Redis cache miss rate elevated above 18% threshold', group: 'Data Caching Ops', opened: '2h ago' }
                 ]
@@ -991,25 +991,25 @@
                 env: 'Production', owner: 'Enterprise DBA Team', ci: 'CI: db_order_prod',
                 host: 'VM-ORD-DB-01', ip: '10.20.40.11', location: 'DC1', health: 'Healthy',
                 hldStatus: 'Verified', drStatus: 'Verified', cyberStatus: 'Verified',
-                links: { snow: '#', infralens: '#', datadog: '#', azure: '#' },
+                links: { snow: '#', apm: '#', datadog: '#', azure: '#' },
                 incidents: []
               },
               {
                 id: 'messaging_kafka', name: 'Messaging (Kafka)', sub: 'Integration', category: 'integration',
                 x: 518, y: 242, w: 158, h: 52,
-                env: 'Production', owner: 'Event Streaming Platform', ci: 'CI: kafka_retail_clus01',
+                env: 'Production', owner: 'Event Streaming Platform', ci: 'CI: kafka_core_clus01',
                 host: 'KFK-BRK-01..03', ip: '10.20.44.10', location: 'DC1', health: 'Healthy',
                 hldStatus: 'Verified', drStatus: 'Verified', cyberStatus: 'Missing',
-                links: { snow: '#', infralens: '#', datadog: '#', azure: '#' },
+                links: { snow: '#', apm: '#', datadog: '#', azure: '#' },
                 incidents: []
               },
               {
                 id: 'inventory_service', name: 'Inventory Service', sub: 'Application', category: 'application',
                 x: 704, y: 242, w: 156, h: 52,
-                env: 'Production', owner: 'Maria Lopez (Supply Tech)', ci: 'CI: inventory_service',
+                env: 'Production', owner: 'Samira Chen (Commerce Platform)', ci: 'CI: inventory_service',
                 host: 'AKS-SUPPLY-01', ip: '10.20.36.88', location: 'Azure East US', health: 'Healthy',
                 hldStatus: 'Verified', drStatus: 'Missing', cyberStatus: 'Verified',
-                links: { snow: '#', infralens: '#', datadog: '#', azure: '#' },
+                links: { snow: '#', apm: '#', datadog: '#', azure: '#' },
                 incidents: []
               },
               {
@@ -1018,7 +1018,7 @@
                 env: 'Production', owner: 'Enterprise DBA Team', ci: 'CI: sql_srv_01_dc1',
                 host: 'DC1-RACK-B04', ip: '10.20.40.21', location: 'DC1', health: 'Healthy',
                 hldStatus: 'Verified', drStatus: 'Verified', cyberStatus: 'Verified',
-                links: { snow: '#', infralens: '#', datadog: '#', azure: '#' },
+                links: { snow: '#', apm: '#', datadog: '#', azure: '#' },
                 incidents: []
               },
               {
@@ -1027,7 +1027,7 @@
                 env: 'Production', owner: 'Core Compute Infra', ci: 'CI: vm_ord_db_01',
                 host: 'ESX-DC1-H09', ip: '10.20.40.10', location: 'DC1', health: 'Healthy',
                 hldStatus: 'Verified', drStatus: 'Verified', cyberStatus: 'Verified',
-                links: { snow: '#', infralens: '#', datadog: '#', azure: '#' },
+                links: { snow: '#', apm: '#', datadog: '#', azure: '#' },
                 incidents: []
               },
               {
@@ -1036,7 +1036,7 @@
                 env: 'Production', owner: '', ci: 'CI: st_ord_backup_01',
                 host: 'Azure Storage LRS', ip: '10.20.99.4', location: 'Azure East US', health: 'Warning',
                 hldStatus: 'Missing', drStatus: 'Verified', cyberStatus: 'Verified',
-                links: { snow: '#', infralens: '#', datadog: '#', azure: '#' },
+                links: { snow: '#', apm: '#', datadog: '#', azure: '#' },
                 incidents: []
               }
             ],
@@ -1062,41 +1062,41 @@
             ]
           },
 
-          wms_core: {
-            id: 'wms_core',
-            name: 'WMS Core Logistics',
-            rootNodeId: 'wms_core',
+          fulfillment_core: {
+            id: 'fulfillment_core',
+            name: 'Fulfillment Core Service',
+            rootNodeId: 'fulfillment_core',
             tier: 'Tier 1 Critical',
             environment: 'Production',
-            owner: 'David Patel (Warehouse Systems)',
+            owner: 'Taylor Brooks (Core Operations Platform)',
             health: 'Degraded',
-            description: 'Real-time warehouse pick/pack execution, RF scanner routing, and ERP inventory reconciliation.',
+            description: 'Real-time order fulfillment orchestration, edge device telemetry routing, and ERP state synchronization.',
             nodes: [
               {
-                id: 'dist_portal', name: 'Distribution Portal', sub: 'Parent Application', category: 'parent',
-                x: 410, y: 28, w: 170, h: 52, env: 'Production', owner: 'Logistics Digital Team', ci: 'CI: dist_portal_prod',
+                id: 'ops_portal', name: 'Operations Portal', sub: 'Parent Application', category: 'parent',
+                x: 410, y: 28, w: 170, h: 52, env: 'Production', owner: 'Operations Digital Team', ci: 'CI: ops_portal_prod',
                 host: 'AKS-LOG-01', ip: '10.32.10.8', location: 'Azure Central US', health: 'Healthy',
                 hldStatus: 'Verified', drStatus: 'Verified', cyberStatus: 'Verified',
-                links: { snow: '#', infralens: '#', datadog: '#', azure: '#' }, incidents: []
+                links: { snow: '#', apm: '#', datadog: '#', azure: '#' }, incidents: []
               },
               {
-                id: 'rf_scanners', name: 'RF Scanner Gateway', sub: 'Network', category: 'network',
-                x: 82, y: 142, w: 164, h: 52, env: 'Production', owner: '', ci: 'CI: rf_gw_dc2',
+                id: 'edge_gateway', name: 'Edge Telemetry Gateway', sub: 'Network', category: 'network',
+                x: 82, y: 142, w: 164, h: 52, env: 'Production', owner: '', ci: 'CI: edge_gw_dc2',
                 host: 'DC2-EDGE-04', ip: '10.32.18.40', location: 'DC2', health: 'Degraded',
                 hldStatus: 'Missing', drStatus: 'Missing', cyberStatus: 'Verified',
-                links: { snow: '#', infralens: '#', datadog: '#', azure: '#' },
+                links: { snow: '#', apm: '#', datadog: '#', azure: '#' },
                 incidents: [
-                  { number: 'INC0049102', priority: 'P1 - Critical', state: 'Active Bridge', title: 'DC2 East Wing RF scanner packet drops causing pick delays', group: 'Warehouse Network Ops', opened: '19m ago' }
+                  { number: 'INC0049102', priority: 'P1 - Critical', state: 'Active Bridge', title: 'DC2 Edge Telemetry Gateway packet drops causing dispatch delays', group: 'Edge Network Ops', opened: '19m ago' }
                 ]
               },
               {
-                id: 'wms_core', name: 'WMS Core Logistics', sub: 'Application', category: 'application',
-                x: 410, y: 140, w: 176, h: 54, env: 'Production', owner: 'David Patel (Warehouse Systems)', ci: 'CI: wms_core_prod',
-                host: 'VM-WMS-APP-01', ip: '10.32.22.15', location: 'DC2', health: 'Degraded',
+                id: 'fulfillment_core', name: 'Fulfillment Core Service', sub: 'Application', category: 'application',
+                x: 410, y: 140, w: 176, h: 54, env: 'Production', owner: 'Taylor Brooks (Core Operations Platform)', ci: 'CI: fulfillment_core_prod',
+                host: 'VM-FULFILL-APP-01', ip: '10.32.22.15', location: 'DC2', health: 'Degraded',
                 hldStatus: 'Verified', drStatus: 'Incomplete', cyberStatus: 'Expired (2025)',
-                links: { snow: '#', infralens: '#', datadog: '#', azure: '#' },
+                links: { snow: '#', apm: '#', datadog: '#', azure: '#' },
                 incidents: [
-                  { number: 'INC0049102', priority: 'P1 - Critical', state: 'Active Bridge', title: 'DC2 East Wing RF scanner packet drops causing pick delays', group: 'Warehouse Network Ops', opened: '19m ago' }
+                  { number: 'INC0049102', priority: 'P1 - Critical', state: 'Active Bridge', title: 'DC2 Edge Telemetry Gateway packet drops causing dispatch delays', group: 'Edge Network Ops', opened: '19m ago' }
                 ]
               },
               {
@@ -1104,41 +1104,41 @@
                 x: 710, y: 142, w: 152, h: 52, env: 'Production', owner: 'ERP Integration CoE', ci: 'CI: sap_erp_ifc',
                 host: 'SAP-PI-01', ip: '10.30.5.12', location: 'DC1', health: 'Healthy',
                 hldStatus: 'Verified', drStatus: 'Verified', cyberStatus: 'Verified',
-                links: { snow: '#', infralens: '#', datadog: '#', azure: '#' }, incidents: []
+                links: { snow: '#', apm: '#', datadog: '#', azure: '#' }, incidents: []
               },
               {
-                id: 'wms_oracle_db', name: 'WMS Oracle DB', sub: 'Database', category: 'database',
-                x: 245, y: 288, w: 162, h: 52, env: 'Production', owner: 'Oracle DBA Group', ci: 'CI: ora_wms_prod',
+                id: 'fulfill_oracle_db', name: 'Fulfillment Oracle DB', sub: 'Database', category: 'database',
+                x: 245, y: 288, w: 162, h: 52, env: 'Production', owner: 'Oracle DBA Group', ci: 'CI: ora_fulfill_prod',
                 host: 'EXADATA-DC2-01', ip: '10.32.50.11', location: 'DC2', health: 'Healthy',
                 hldStatus: 'Verified', drStatus: 'Verified', cyberStatus: 'Verified',
-                links: { snow: '#', infralens: '#', datadog: '#', azure: '#' }, incidents: []
+                links: { snow: '#', apm: '#', datadog: '#', azure: '#' }, incidents: []
               },
               {
-                id: 'rabbitmq_wms', name: 'RabbitMQ Broker', sub: 'Integration', category: 'integration',
-                x: 560, y: 288, w: 162, h: 52, env: 'Production', owner: 'Event Streaming Platform', ci: 'CI: rmq_wms_01',
+                id: 'rabbitmq_fulfill', name: 'RabbitMQ Broker', sub: 'Integration', category: 'integration',
+                x: 560, y: 288, w: 162, h: 52, env: 'Production', owner: 'Event Streaming Platform', ci: 'CI: rmq_fulfill_01',
                 host: 'VM-RMQ-04', ip: '10.32.55.9', location: 'DC2', health: 'Healthy',
                 hldStatus: 'Verified', drStatus: 'Verified', cyberStatus: 'Verified',
-                links: { snow: '#', infralens: '#', datadog: '#', azure: '#' }, incidents: []
+                links: { snow: '#', apm: '#', datadog: '#', azure: '#' }, incidents: []
               },
               {
-                id: 'az_blob_archive', name: 'Azure Manifest Archive', sub: 'Storage', category: 'infrastructure',
-                x: 560, y: 398, w: 178, h: 50, env: 'Production', owner: 'Warehouse Systems', ci: 'CI: az_wms_manifest',
+                id: 'az_blob_archive', name: 'Cloud Event Archive', sub: 'Storage', category: 'infrastructure',
+                x: 560, y: 398, w: 178, h: 50, env: 'Production', owner: 'Core Operations Platform', ci: 'CI: az_fulfill_archive',
                 host: 'Azure Blob GRS', ip: '10.32.98.2', location: 'Azure Central US', health: 'Healthy',
                 hldStatus: 'Missing', drStatus: 'Verified', cyberStatus: 'Verified',
-                links: { snow: '#', infralens: '#', datadog: '#', azure: '#' }, incidents: []
+                links: { snow: '#', apm: '#', datadog: '#', azure: '#' }, incidents: []
               }
             ],
             edges: [
-              { id: 'w1', from: 'dist_portal', to: 'wms_core', style: 'depends', label: 'Depends on' },
-              { id: 'w2', from: 'rf_scanners', to: 'wms_core', style: 'bidirectional', label: 'Bidirectional' },
-              { id: 'w3', from: 'wms_core', to: 'sap_erp_sync', style: 'bidirectional', label: 'EDI / IDoc' },
-              { id: 'w4', from: 'wms_core', to: 'wms_oracle_db', style: 'depends', label: 'Depends on' },
-              { id: 'w5', from: 'wms_core', to: 'rabbitmq_wms', style: 'depends', label: 'Publishes' },
+              { id: 'w1', from: 'ops_portal', to: 'fulfillment_core', style: 'depends', label: 'Depends on' },
+              { id: 'w2', from: 'edge_gateway', to: 'fulfillment_core', style: 'bidirectional', label: 'Bidirectional' },
+              { id: 'w3', from: 'fulfillment_core', to: 'sap_erp_sync', style: 'bidirectional', label: 'EDI / IDoc' },
+              { id: 'w4', from: 'fulfillment_core', to: 'fulfill_oracle_db', style: 'depends', label: 'Depends on' },
+              { id: 'w5', from: 'fulfillment_core', to: 'rabbitmq_fulfill', style: 'depends', label: 'Publishes' },
               {
-                id: 'w6', from: 'rabbitmq_wms', to: 'az_blob_archive', style: 'ai', label: 'AI inferred (82%)',
+                id: 'w6', from: 'rabbitmq_fulfill', to: 'az_blob_archive', style: 'ai', label: 'AI inferred (82%)',
                 confidence: 82, status: 'AUTO_DETECTED',
-                sourceTitle: 'WMS Shipping Manifest Architecture (Confluence)',
-                evidence: 'Confluence page describes dead-letter manifest archival from RabbitMQ consumer to Azure Blob GRS, absent from ServiceNow cmdb_rel_ci.'
+                sourceTitle: 'Fulfillment Event & Archival Architecture (Confluence)',
+                evidence: 'Confluence page describes dead-letter event archival from RabbitMQ consumer to Azure Blob GRS, absent from ServiceNow cmdb_rel_ci.'
               }
             ]
           },
@@ -1149,7 +1149,7 @@
             rootNodeId: 'payment_gateway',
             tier: 'Tier 1 Critical (PCI)',
             environment: 'Production',
-            owner: 'Elena Vance (Payments Security)',
+            owner: 'Casey Rivera (Payments Security)',
             health: 'Healthy',
             description: 'PCI-DSS scoped payment authorization, tokenization, and real-time fraud scoring gateway.',
             nodes: [
@@ -1158,42 +1158,42 @@
                 x: 84, y: 146, w: 156, h: 52, env: 'Production', owner: 'Cloud Security Eng', ci: 'CI: gcp_waf_pay_01',
                 host: 'GCP Global LB', ip: '34.117.48.10', location: 'GCP us-central1', health: 'Healthy',
                 hldStatus: 'Verified', drStatus: 'Verified', cyberStatus: 'Verified',
-                links: { snow: '#', infralens: '#', datadog: '#', azure: '#' }, incidents: []
+                links: { snow: '#', apm: '#', datadog: '#', azure: '#' }, incidents: []
               },
               {
                 id: 'payment_gateway', name: 'Payment Gateway', sub: 'Application', category: 'application',
-                x: 344, y: 144, w: 170, h: 54, env: 'Production', owner: 'Elena Vance (Payments Security)', ci: 'CI: payment_gw_prod',
+                x: 344, y: 144, w: 170, h: 54, env: 'Production', owner: 'Casey Rivera (Payments Security)', ci: 'CI: payment_gw_prod',
                 host: 'GKE-PCI-PROD-01', ip: '10.60.14.22', location: 'GCP us-central1', health: 'Healthy',
                 hldStatus: 'Verified', drStatus: 'Verified', cyberStatus: 'Verified',
-                links: { snow: '#', infralens: '#', datadog: '#', azure: '#' }, incidents: []
+                links: { snow: '#', apm: '#', datadog: '#', azure: '#' }, incidents: []
               },
               {
                 id: 'fraud_vertex', name: 'Fraud Engine (Vertex)', sub: 'Service', category: 'parent',
                 x: 626, y: 146, w: 172, h: 52, env: 'Production', owner: 'Risk ML Platform', ci: 'CI: fraud_vertex_ep',
                 host: 'Vertex AI Endpoint', ip: '10.60.20.8', location: 'GCP us-central1', health: 'Healthy',
                 hldStatus: 'Verified', drStatus: 'Verified', cyberStatus: 'Verified',
-                links: { snow: '#', infralens: '#', datadog: '#', azure: '#' }, incidents: []
+                links: { snow: '#', apm: '#', datadog: '#', azure: '#' }, incidents: []
               },
               {
                 id: 'token_vault', name: 'PCI Token Vault', sub: 'Database', category: 'database',
                 x: 186, y: 296, w: 158, h: 52, env: 'Production', owner: 'Payments Security', ci: 'CI: vault_pci_01',
                 host: 'AlloyDB PCI HA', ip: '10.60.40.5', location: 'GCP us-central1', health: 'Healthy',
                 hldStatus: 'Verified', drStatus: 'Verified', cyberStatus: 'Verified',
-                links: { snow: '#', infralens: '#', datadog: '#', azure: '#' }, incidents: []
+                links: { snow: '#', apm: '#', datadog: '#', azure: '#' }, incidents: []
               },
               {
                 id: 'ledger_pubsub', name: 'Ledger Pub/Sub', sub: 'Integration', category: 'integration',
                 x: 410, y: 296, w: 158, h: 52, env: 'Production', owner: 'FinTech Platform', ci: 'CI: gcp_ps_ledger',
                 host: 'Cloud Pub/Sub', ip: 'Private Google', location: 'GCP Multi-Region', health: 'Healthy',
                 hldStatus: 'Verified', drStatus: 'Verified', cyberStatus: 'Verified',
-                links: { snow: '#', infralens: '#', datadog: '#', azure: '#' }, incidents: []
+                links: { snow: '#', apm: '#', datadog: '#', azure: '#' }, incidents: []
               },
               {
                 id: 'stripe_ext', name: 'Stripe Acquirer API', sub: 'External', category: 'external',
                 x: 632, y: 296, w: 164, h: 52, env: 'External', owner: 'External Processor', ci: 'CI: ext_stripe_api',
                 host: 'SaaS External', ip: '54.187.205.235', location: 'External', health: 'Healthy',
                 hldStatus: 'Verified', drStatus: 'Verified', cyberStatus: 'Verified',
-                links: { snow: '#', infralens: '#', datadog: '#', azure: '#' }, incidents: []
+                links: { snow: '#', apm: '#', datadog: '#', azure: '#' }, incidents: []
               }
             ],
             edges: [
@@ -1211,11 +1211,11 @@
             id: 'doc_ord_hld', appId: 'order_service', ciIds: ['order_service', 'customer_portal', 'app_gateway'],
             title: 'Order Service High-Level Architecture & Diagram',
             source: 'Confluence', docType: 'HLD', updated: '2023-08-14', stale: true,
-            author: 'M. Richardson', acl: 'All Engineering',
+            author: 'R. Bennett', acl: 'All Engineering',
             summary: 'End-to-end component design covering Customer Portal ingress via Azure Front Door, Order Service API, SQL Server 01 HA cluster, and Kafka event publishing.',
             extracted: { diagramNodes: 9, lastUpdatedInDiagram: '2023-08', rto: 'N/A', approver: 'Architecture Review Board' },
             chunks: [
-              'Section 2.1: Incoming retail traffic terminates at Azure Front Door before forwarding through Application Gateway (10.20.28.5) to Order Service on VM-HOST-01.',
+              'Section 2.1: Incoming customer traffic terminates at Azure Front Door before forwarding through Application Gateway (10.20.28.5) to Order Service on VM-HOST-01.',
               '[Gemini Multimodal Diagram OCR]: Detected boxes Customer Portal -> Order Service -> Order Database -> SQL Server 01 / VM-ORD-DB-01. Diagram stamp reads Last Updated Aug 2023.'
             ]
           },
@@ -1223,7 +1223,7 @@
             id: 'doc_ord_dr', appId: 'order_service', ciIds: ['order_service', 'order_database', 'vm_ord_db_01', 'storage_account'],
             title: 'Order Service DR Failover Runbook v2.4',
             source: 'SharePoint', docType: 'DR_RUNBOOK', updated: '2026-09-12', stale: false,
-            author: 'John Smith', acl: 'All Engineering',
+            author: 'Alex Morgan', acl: 'All Engineering',
             summary: 'Validated Disaster Recovery runbook specifying DC1-to-DC2 database failover, RTO 15 minutes, RPO 5 minutes, and Azure Storage WAL archive restoration.',
             extracted: { rto: '15 minutes', rpo: '5 minutes', lastDrTest: '2026-08-29 (Passed)', approver: 'BCP Resilience Office' },
             chunks: [
@@ -1243,32 +1243,32 @@
             ]
           },
           {
-            id: 'doc_wms_hld', appId: 'wms_core', ciIds: ['wms_core', 'wms_oracle_db', 'rabbitmq_wms', 'az_blob_archive'],
-            title: 'WMS Core & Shipping Manifest Architecture',
+            id: 'doc_fulfill_hld', appId: 'fulfillment_core', ciIds: ['fulfillment_core', 'fulfill_oracle_db', 'rabbitmq_fulfill', 'az_blob_archive'],
+            title: 'Fulfillment Core & Shipping Manifest Architecture',
             source: 'Confluence', docType: 'HLD', updated: '2026-02-19', stale: false,
-            author: 'David Patel', acl: 'All Engineering',
-            summary: 'Architecture specification for WMS Core Logistics, Exadata persistence, SAP ERP IDoc integration, and RabbitMQ manifest archival.',
-            extracted: { diagramNodes: 7, lastUpdatedInDiagram: '2026-02', approver: 'Supply Chain ARB' },
+            author: 'Taylor Brooks', acl: 'All Engineering',
+            summary: 'Architecture specification for Fulfillment Core Service, Exadata persistence, SAP ERP IDoc integration, and RabbitMQ manifest archival.',
+            extracted: { diagramNodes: 7, lastUpdatedInDiagram: '2026-02', approver: 'Enterprise ARB' },
             chunks: [
-              'Section 3.4 Archival: RabbitMQ Broker routes completed shipping manifests to Azure Manifest Archive (az_wms_manifest) for 7-year compliance retention.'
+              'Section 3.4 Archival: RabbitMQ Broker routes completed fulfillment audit events to Cloud Event Archive (az_fulfill_archive) for 7-year compliance retention.'
             ]
           },
           {
-            id: 'doc_wms_dr', appId: 'wms_core', ciIds: ['wms_core'],
-            title: 'WMS Core DR Procedure Draft',
+            id: 'doc_fulfill_dr', appId: 'fulfillment_core', ciIds: ['fulfillment_core'],
+            title: 'Fulfillment Core DR Procedure Draft',
             source: 'SharePoint', docType: 'DR_RUNBOOK', updated: '2025-06-05', stale: true,
-            author: 'Warehouse Ops', acl: 'All Engineering',
+            author: 'Operations SRE', acl: 'All Engineering',
             summary: 'Draft DR document outlining Oracle Data Guard switchover but missing formal RTO/RPO targets and recent failover test sign-off.',
             extracted: { rto: 'MISSING', rpo: 'MISSING', lastDrTest: 'None recorded', approver: 'Pending' },
             chunks: [
-              'Section 2: In event of DC2 outage, contact DBA on-call to initiate Oracle switchover. [TBD: Insert exact RTO/RPO SLA and RF scanner re-homing steps].'
+              'Section 2: In event of DC2 outage, contact DBA on-call to initiate Oracle switchover. [TBD: Insert exact RTO/RPO SLA and edge gateway re-homing steps].'
             ]
           },
           {
             id: 'doc_pay_cyber', appId: 'payment_gateway', ciIds: ['payment_gateway', 'token_vault', 'cloud_armor'],
             title: 'Payment Gateway PCI-DSS v4.0 Cyber Approval & HLD',
             source: 'SharePoint', docType: 'CYBER_APPROVAL', updated: '2026-10-01', stale: false,
-            author: 'Elena Vance', acl: 'PCI-Restricted ACL',
+            author: 'Casey Rivera', acl: 'PCI-Restricted ACL',
             summary: 'Full QSA-verified PCI-DSS v4.0 architecture sign-off, tokenization boundaries, and Cloud Armor WAF controls.',
             extracted: { approvalId: 'PCI-SAR-2026-089', status: 'Approved (Signed)', validUntil: '2027-10-01', approver: 'Global InfoSec & QSA' },
             chunks: [
@@ -1294,7 +1294,7 @@
             code: 'GAP_MISSING_HLD', category: 'Architecture Design', severity: 'Critical', status: 'Open',
             title: 'No architecture diagram found for Redis Cache',
             detail: 'Confluence & SharePoint corpus search returned 0 design diagrams referencing CI redis_ord_prod_01 or failover topology.',
-            remediation: 'Publish Redis cluster topology diagram in Retail Architecture Confluence space and tag CI: redis_ord_prod_01.'
+            remediation: 'Publish Redis cluster topology diagram in Platform Architecture Confluence space and tag CI: redis_ord_prod_01.'
           },
           {
             id: 'gap_2', appId: 'order_service', ciId: 'storage_account', ciName: 'Storage Account',
@@ -1307,7 +1307,7 @@
             id: 'gap_3', appId: 'order_service', ciId: 'messaging_kafka', ciName: 'Messaging (Kafka)',
             code: 'GAP_MISSING_CYBER', category: 'Cyber Approval', severity: 'Critical', status: 'Open',
             title: 'Missing Cyber Security Approval for Messaging (Kafka)',
-            detail: 'No active SAR / Cyber approval artifact linked for kafka_retail_clus01 topic ACL and encryption configuration.',
+            detail: 'No active SAR / Cyber approval artifact linked for kafka_core_clus01 topic ACL and encryption configuration.',
             remediation: 'Submit Security Architecture Review in SharePoint Governance library and link SAR ticket.'
           },
           {
@@ -1318,25 +1318,25 @@
             remediation: 'Author DR Runbook with RTO/RPO targets and failover checklist in SharePoint DR Library.'
           },
           {
-            id: 'gap_5', appId: 'wms_core', ciId: 'wms_core', ciName: 'WMS Core Logistics',
+            id: 'gap_5', appId: 'fulfillment_core', ciId: 'fulfillment_core', ciName: 'Fulfillment Core Service',
             code: 'GAP_EXPIRED_CYBER', category: 'Cyber Approval', severity: 'Critical', status: 'Open',
-            title: 'Cyber Security Approval expired in 2025 for WMS Core',
+            title: 'Cyber Security Approval expired in 2025 for Fulfillment Core',
             detail: 'Last signed SAR expired 2025-11-30; annual Tier 1 re-certification overdue.',
-            remediation: 'Initiate Cyber Security re-certification for WMS Core Logistics.'
+            remediation: 'Initiate Cyber Security re-certification for Fulfillment Core Service.'
           },
           {
-            id: 'gap_6', appId: 'wms_core', ciId: 'wms_core', ciName: 'WMS Core Logistics',
+            id: 'gap_6', appId: 'fulfillment_core', ciId: 'fulfillment_core', ciName: 'Fulfillment Core Service',
             code: 'GAP_INCOMPLETE_DR', category: 'DR Runbook', severity: 'High', status: 'Open',
             title: 'DR runbook missing RTO/RPO targets and failover test evidence',
-            detail: 'Vertex AI semantic review of WMS Core DR Procedure Draft flagged TBD placeholders for RTO/RPO and no DR test date.',
+            detail: 'Vertex AI semantic review of Fulfillment Core DR Procedure Draft flagged TBD placeholders for RTO/RPO and no DR test date.',
             remediation: 'Complete RTO/RPO section and upload signed DC2 failover drill report.'
           },
           {
-            id: 'gap_7', appId: 'wms_core', ciId: 'rf_scanners', ciName: 'RF Scanner Gateway',
+            id: 'gap_7', appId: 'fulfillment_core', ciId: 'edge_gateway', ciName: 'Edge Telemetry Gateway',
             code: 'GAP_MISSING_OWNER', category: 'CMDB Ownership', severity: 'High', status: 'Open',
-            title: 'Owner not defined for RF Scanner Gateway (active P1)',
-            detail: 'CI rf_gw_dc2 is currently experiencing a P1 incident with no assigned technical owner in CMDB.',
-            remediation: 'Assign Warehouse Network Ops lead as technical owner in ServiceNow.'
+            title: 'Owner not defined for Edge Telemetry Gateway (active P1)',
+            detail: 'CI edge_gw_dc2 is currently experiencing a P1 incident with no assigned technical owner in CMDB.',
+            remediation: 'Assign Edge Network Ops lead as technical owner in ServiceNow.'
           }
         ],
 
@@ -1360,10 +1360,10 @@
             citation: 'Order Service Quarterly Capacity Note (Confluence)'
           },
           {
-            id: 'rec_4', appId: 'wms_core', ciId: 'wms_core', category: 'Resilience', priority: 'High', status: 'Active',
-            title: 'Prioritize DC2 RF Scanner redundant path & complete DR runbook',
-            rationale: 'Active P1 incident INC0049102 correlates directly with single-homed RF Scanner Gateway and incomplete DR failover instructions.',
-            citation: 'WMS Core DR Procedure Draft (SharePoint) + INC0049102'
+            id: 'rec_4', appId: 'fulfillment_core', ciId: 'fulfillment_core', category: 'Resilience', priority: 'High', status: 'Active',
+            title: 'Prioritize DC2 Edge Gateway redundant path & complete DR runbook',
+            rationale: 'Active P1 incident INC0049102 correlates directly with single-homed Edge Telemetry Gateway and incomplete DR failover instructions.',
+            citation: 'Fulfillment Core DR Procedure Draft (SharePoint) + INC0049102'
           },
           {
             id: 'rec_5', appId: 'payment_gateway', ciId: 'payment_gateway', category: 'Compliance', priority: 'Low', status: 'Active',
@@ -1379,7 +1379,7 @@
           { name: 'SharePoint Online (MS Graph)', phase: 'Phase 1', status: 'Connected', protocol: 'Pub/Sub + mcp-sharepoint', cadence: 'Delta Token Sync + Entra ACL Tags', count: '4 Libraries · DR & Cyber SARs' },
           { name: 'Azure Resource Graph & GCP CAI', phase: 'Phase 2', status: 'Planned', protocol: 'Pub/Sub + mcp-cloud-discovery', cadence: 'Cloud vs CMDB Drift Detection', count: 'Ready to plug into Event Bus' },
           { name: 'ServiceNow GRC / Wiz Security', phase: 'Phase 2', status: 'Planned', protocol: 'Pub/Sub + mcp-grc', cadence: 'Vulnerability & Live ATO Overlay', count: 'Ready to plug into Event Bus' },
-          { name: 'Datadog & Infralens APM', phase: 'Phase 3', status: 'Planned', protocol: 'Pub/Sub + mcp-observability', cadence: 'Live Telemetry & Right-Sizing AI', count: 'Deep links active in Phase 1' }
+          { name: 'Datadog & Enterprise APM', phase: 'Phase 3', status: 'Planned', protocol: 'Pub/Sub + mcp-observability', cadence: 'Live Telemetry & Right-Sizing AI', count: 'Deep links active in Phase 1' }
         ]
       };
 
@@ -1942,7 +1942,7 @@
             '<div class="text-xs font-semibold uppercase tracking-wider text-[var(--muted-foreground)]">Authoritative Deep Links</div>' +
             '<div class="grid grid-cols-2 gap-2">' +
               deepLinkBtn('ServiceNow CMDB', '#0f766e', node.ci) +
-              deepLinkBtn('Open in Infralens', '#1d63dc', node.name) +
+              deepLinkBtn('Open in APM Portal', '#1d63dc', node.name) +
               deepLinkBtn('View in Datadog', '#6d28d9', node.name) +
               deepLinkBtn('Open in Azure / Cloud', '#0284c7', node.location) +
             '</div>' +
@@ -2532,14 +2532,14 @@
           const crit = open.filter(function (g) { return g.severity === 'Critical'; });
           return {
             tools: ['mcp-daaim-graph.get_ci_gaps(tier=1, status="Open")', 'mcp-sharepoint.graph_search_files("SAR OR DR Runbook")'],
-            answer: 'Across our 3 Tier 1 applications, DAAIM currently flags **' + open.length + ' open governance gaps** (**' + crit.length + ' Critical**):\n• **Order Service:** Missing HLD diagram for `Redis Cache`, missing Cyber Approval for `Messaging (Kafka)`, missing DR Runbook for `Inventory Service`, and undefined owner on `Storage Account`.\n• **WMS Core Logistics:** Cyber Approval expired in 2025, DR Runbook is missing formal RTO/RPO targets, and `RF Scanner Gateway` has no owner during an active P1.\n• **Payment Gateway:** 0 open gaps (PCI-DSS v4.0 verified).',
+            answer: 'Across our 3 Tier 1 applications, DAAIM currently flags **' + open.length + ' open governance gaps** (**' + crit.length + ' Critical**):\n• **Order Service:** Missing HLD diagram for `Redis Cache`, missing Cyber Approval for `Messaging (Kafka)`, missing DR Runbook for `Inventory Service`, and undefined owner on `Storage Account`.\n• **Fulfillment Core Service:** Cyber Approval expired in 2025, DR Runbook is missing formal RTO/RPO targets, and `Edge Telemetry Gateway` has no owner during an active P1.\n• **Payment Gateway:** 0 open gaps (PCI-DSS v4.0 verified).',
             citations: ['Tier 1 Compliance Policy Engine', 'SharePoint Governance Library (ACL-Checked)']
           };
         }
         if (q.includes('incident') || q.includes('servicenow') || q.includes('snow')) {
           return {
             tools: ['mcp-servicenow.list_active_incidents(app="order_service")', 'mcp-daaim-graph.get_app_subgraph("order_service", depth=2)'],
-            answer: 'Live ServiceNow check returned **2 active incidents** on **Order Service**:\n• **INC0048291 (P2 - High):** Intermittent checkout latency > 2.4s during peak batch load (Assigned: Retail Platform SRE, 42m ago).\n• **INC0048315 (P3 - Moderate):** Redis cache miss rate elevated above 18% threshold on `redis_ord_prod_01` (2h ago).\n\n**Correlation Hint:** Both incidents converge on the `Order Service <-> Redis Cache` dependency path. Note that `Redis Cache` currently has no architecture diagram indexed.',
+            answer: 'Live ServiceNow check returned **2 active incidents** on **Order Service**:\n• **INC0048291 (P2 - High):** Intermittent checkout latency > 2.4s during peak batch load (Assigned: Core Platform SRE, 42m ago).\n• **INC0048315 (P3 - Moderate):** Redis cache miss rate elevated above 18% threshold on `redis_ord_prod_01` (2h ago).\n\n**Correlation Hint:** Both incidents converge on the `Order Service <-> Redis Cache` dependency path. Note that `Redis Cache` currently has no architecture diagram indexed.',
             citations: ['Live ServiceNow API via mcp-servicenow', 'Order Service Topology Graph']
           };
         }

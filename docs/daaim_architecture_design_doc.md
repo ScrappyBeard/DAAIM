@@ -12,8 +12,6 @@ Enterprise infrastructure, application dependency, ownership, and governance kno
 
 **Dynamic Architecture AI Map (DAAIM)** solves this by creating a **unified, read-only, AI-enriched architectural intelligence plane on GCP**. It continuously ingests critical **Tier 1 applications** and their multi-hop dependency graphs from ServiceNow CMDB, correlates them with scraped technical documentation (High-Level Designs, DR runbooks, cyber security approvals, support docs) from Confluence and SharePoint using **Vertex AI (RAG + Multimodal + MCP)**, surfaces **missing documentation and governance gaps**, and renders an interactive living architecture map.
 
-![Sysco Dynamic Architecture AI Map (DAAIM) Target UI Reference](./daaim_ui_reference.png)
-
 ### 1.1 Architectural Principles
 
 1. **Authoritative Systems Stay Authoritative (Read-Only Integration):** DAAIM never mutates ServiceNow CMDB, Confluence, or SharePoint in Phase 1. Corrections, gap resolutions, and ownership fixes link engineers directly back to the source record (with optional human-in-the-loop verification inside DAAIM).
@@ -30,9 +28,9 @@ To deliver business value rapidly while accommodating the broader enterprise est
 
 | Phase | Scope & Ingested Sources | Key Capabilities Delivered |
 | :--- | :--- | :--- |
-| **Phase 1 (MVP)** | **ServiceNow** (Tier 1 Business/Application Services, CMDB CIs & relationships, Incidents/Changes/Problems) + **Confluence** & **SharePoint** (HLD/LLD designs, diagrams, DR runbooks, cyber approvals, policies) | Interactive Tier 1 dependency map; right-hand CI inspector with deterministic deep links to ServiceNow, Infralens, Datadog, and Azure; RAG document correlation; automated **Gap Detection** (missing designs, DR runbooks, cyber approvals, owners, stale docs); AI Recommendations & AI-inferred edge proposals. |
+| **Phase 1 (MVP)** | **ServiceNow** (Tier 1 Business/Application Services, CMDB CIs & relationships, Incidents/Changes/Problems) + **Confluence** & **SharePoint** (HLD/LLD designs, diagrams, DR runbooks, cyber approvals, policies) | Interactive Tier 1 dependency map; right-hand CI inspector with deterministic deep links to ServiceNow, Enterprise APM, Datadog, and Azure; RAG document correlation; automated **Gap Detection** (missing designs, DR runbooks, cyber approvals, owners, stale docs); AI Recommendations & AI-inferred edge proposals. |
 | **Phase 2 (Cloud & GRC)** | **Cloud Discovery APIs** (Azure Resource Graph, GCP Cloud Asset Inventory, AWS Config, on-prem vCenter/CMDB discovery) + **Security & GRC Tooling** (ServiceNow GRC/SecOps, Wiz/Qualys vulnerability feeds, Cyber Approval registries) | Automated **CMDB vs. Cloud Drift Detection** (shadow infrastructure not in SNOW); automated Cyber Approval expiry/ATO verification; live vulnerability/risk overlays directly on architecture graph nodes. |
-| **Phase 3 (Observability & Agentic Ops)** | **Observability & APM** (Datadog, Infralens metrics/service maps, OpenTelemetry traces) + **Git/OpenDocs** (Architecture-as-Code repos, Terraform/IaC) | Live node health from APM; automated right-sizing & unused-dependency recommendations backed by telemetry; blast-radius simulation for Change Requests; conversational Vertex AI Architect Co-Pilot via MCP. |
+| **Phase 3 (Observability & Agentic Ops)** | **Observability & APM** (Datadog, Enterprise APM metrics/service maps, OpenTelemetry traces) + **Git/OpenDocs** (Architecture-as-Code repos, Terraform/IaC) | Live node health from APM; automated right-sizing & unused-dependency recommendations backed by telemetry; blast-radius simulation for Change Requests; conversational Vertex AI Architect Co-Pilot via MCP. |
 
 ```mermaid
 flowchart LR
@@ -48,7 +46,7 @@ flowchart LR
     end
 
     subgraph P3["Phase 3: Telemetry and IaC"]
-        OBS["Datadog and Infralens APM"]
+        OBS["Datadog and Enterprise APM APM"]
         GIT["Git Repos and Open Docs"]
     end
 
@@ -95,7 +93,7 @@ flowchart TB
         SNOW["ServiceNow: CMDB, Incidents, Changes"]
         CONF["Confluence: Designs, Runbooks, Diagrams"]
         SP["SharePoint: Cyber Approvals, DR Docs, Policies"]
-        DEEPLINKS["External Portals: Azure, Datadog, Infralens"]
+        DEEPLINKS["External Portals: Azure, Datadog, Enterprise APM"]
     end
 
     subgraph NET["GCP Security Perimeter and Connectivity"]
@@ -193,7 +191,7 @@ flowchart TB
 | :--- | :--- | :--- | :--- |
 | **Compute (Web, API, Workers, MCP)** | **Cloud Run** (Services & Jobs) | Serverless autoscaling (scale-to-zero for batch connectors, fast cold start for API/MCP), native VPC connector, IAM service-to-service auth for internal MCP servers, zero cluster ops. | **GKE Autopilot** if heavy custom sidecars, long-running streaming jobs (>60 min), or enterprise K8s standardization is mandatory. |
 | **Event Bus** | **Cloud Pub/Sub** (with Schemas, Ordering Keys & DLQs) | Native decoupling between slow external APIs (SNOW/SharePoint throttling) and heavy AI processing; built-in dead-lettering, replay via seek/retention, and zero-code BigQuery subscriptions. | **Cloud Tasks** only for simple point-to-point HTTP retries; Pub/Sub is superior here because multiple consumers (Graph Updater, AI Enricher, BigQuery Analytics) subscribe to the same events. |
-| **Primary Graph + Relational + Vector DB** | **AlloyDB for PostgreSQL** (or **Cloud SQL Enterprise Plus PostgreSQL** for lower MVP cost) with `pgvector` (ScaNN) | **Single transactional engine** for CMDB entities, multi-hop recursive CTE graph queries (50k–200k CIs traverse in <50ms), Gap/Recommendation tables, **AND** ACL-filtered vector similarity search (`WHERE 'group:retail-eng' = ANY(acl_principals)`). Eliminates cross-database sync drift. | **Cloud Spanner Graph** (GQL native) if enterprise scale exceeds 500k+ CIs with deep arbitrary-hop traversals (>6 hops) or global multi-region active-active is required. **Neo4j Aura on GCP** if complex graph algorithms (PageRank/community detection) become core. |
+| **Primary Graph + Relational + Vector DB** | **AlloyDB for PostgreSQL** (or **Cloud SQL Enterprise Plus PostgreSQL** for lower MVP cost) with `pgvector` (ScaNN) | **Single transactional engine** for CMDB entities, multi-hop recursive CTE graph queries (50k–200k CIs traverse in <50ms), Gap/Recommendation tables, **AND** ACL-filtered vector similarity search (`WHERE 'group:platform-eng' = ANY(acl_principals)`). Eliminates cross-database sync drift. | **Cloud Spanner Graph** (GQL native) if enterprise scale exceeds 500k+ CIs with deep arbitrary-hop traversals (>6 hops) or global multi-region active-active is required. **Neo4j Aura on GCP** if complex graph algorithms (PageRank/community detection) become core. |
 | **RAG & Vector Retrieval** | **Hybrid Search in PostgreSQL (`pgvector` + `tsvector` BM25) + Vertex AI `text-embedding-005`** (with optional **Vertex AI RAG Engine** evaluation) | Gives exact SQL-level filtering by `ci_id`, `doc_type`, `environment`, and `user_acl_groups` alongside semantic similarity and keyword matching (crucial for exact CI names like `VM-ORD-DB-01` or `10.20.30.45` where pure vector search struggles). | **Vertex AI Search (Enterprise Edition)** if out-of-the-box managed SharePoint/Confluence connectors with built-in ACL sync are preferred over custom scrapers (note: higher licensing cost and less granular control over custom diagram parsing). |
 | **LLM & Multimodal Intelligence** | **Vertex AI Gemini 2.5 Flash** (high-volume parsing, classification, diagram OCR) + **Gemini 2.5 Pro** (complex gap reasoning, cross-doc correlation, recommendations) | Multimodal native support lets DAAIM directly read architecture diagrams (PNG/PDF/Visio exports/Draw.io), extract system boxes/arrows, and compare them against CMDB. Tiered model routing cuts LLM cost by ~70%. | Standardize on **Vertex AI Context Caching** for repeated Tier 1 compliance policy prompts. |
 | **Agent & Tooling Framework** | **Vertex AI Agent Engine (ADK)** + **Cloud Run MCP Servers** | Cleanly standardizes external integrations behind JSON-RPC MCP tool contracts so the AI agent can query CMDB/Confluence/SharePoint live without hard-coded API spaghetti, and seamlessly onboards Phase 2/3 tools. | Custom LangGraph / Python orchestrator on Cloud Run if tighter custom state-machine control is preferred over managed Agent Engine. |
@@ -242,7 +240,7 @@ sequenceDiagram
 
     PS->>NORM: Deliver CMDB_SUBGRAPH_UPDATED & ITSM_EVENT messages
     NORM->>NORM: Classify CI Types (App, DB, Cache, Network, Compute, Storage, External)
-    NORM->>NORM: Construct deterministic deep links (SNOW, Azure, Datadog, Infralens)
+    NORM->>NORM: Construct deterministic deep links (SNOW, Azure, Datadog, Enterprise APM)
     NORM->>DB: UPSERT config_items, ci_relationships (source=CMDB_AUTHORITATIVE), incidents
     NORM->>DB: Soft-deprecate stale CMDB edges absent from full reconciliation
     NORM->>ENR: Publish APP_GRAPH_CHANGED event (triggers AI doc linking & gap re-evaluation)
@@ -560,7 +558,7 @@ A common architectural pitfall is trying to push bulk CMDB ingestion through MCP
 | `mcp-confluence` | Phase 1 | `cql_search_pages`, `get_page_content`, `list_page_attachments` | Enables the Gap Agent to perform targeted fallback searches when an expected HLD or DR Runbook isn't found in the pre-indexed corpus. |
 | `mcp-sharepoint` | Phase 1 | `graph_search_files`, `get_file_metadata`, `get_site_permissions` | Enables targeted lookup for Cyber Approval records, Governance sign-off spreadsheets, and DR test certificates. |
 | `mcp-cloud-discovery` | Phase 2 | `query_azure_resource_graph`, `query_gcp_asset_inventory` | Verifies whether a VM, Redis Cache, or Storage Account exists live in Azure/GCP and detects CMDB drift. |
-| `mcp-observability-grc` | Phase 2/3 | `get_datadog_utilization`, `get_infralens_topology`, `get_cyber_ato_status` | Feeds live CPU/DB utilization for right-sizing recommendations and real-time ATO/vulnerability status. |
+| `mcp-observability-grc` | Phase 2/3 | `get_datadog_utilization`, `get_apm_topology`, `get_cyber_ato_status` | Feeds live CPU/DB utilization for right-sizing recommendations and real-time ATO/vulnerability status. |
 
 ### 6.2 Tier 1 Gap Detection & Compliance Rubric
 
@@ -611,7 +609,7 @@ The frontend is built as a responsive **Next.js (React 19 + TypeScript)** applic
 | **Left Navigation Rail** | `Applications`, `Map View`, `List View`, `Documentation`, `Recommendations`, `Missing Information`, `Insights`, `Gaps`, `Settings` | Persistent App Shell with live badge counters from `/api/v1/summary/badges`. Supports switching effortlessly between single-app topology (`Map View`), tabular governance audits (`List View` / `Gaps`), and cross-enterprise rollup (`Insights`). |
 | **Top Global Bar** | Search (`Search for an application, system, CI or owner...`) + Filters (`Environment`, `Service Type`, `Owner`) | Instant typeahead backed by PostgreSQL `pg_trgm` + `tsvector` (<150ms). Filter selections update URL query params (shareable deep links) and dynamically highlight/dim nodes on canvas. |
 | **Interactive Graph Canvas** | Tiered node graph (`Customer Portal` -> `Order Service` -> `Order DB`, `Kafka`, `Redis`, `Inventory Service` -> `SQL Server 01`, `VM-ORD-DB-01`, `Storage Account`), Legend, Toolbar (`Show Labels`, `Layout`, `Filter`, `Export`, `Fullscreen`) | Built with **React Flow (`@xyflow/react`)** + **ELK.js** layered hierarchical layout (top-down parent->app->tier->infra + left-to-right ingress flow `Web Users -> Azure Front Door -> App Gateway -> Order Service`). Custom React node renderers color-coded by category; edge renderers for solid `Depends on`, double `Bidirectional`, and dotted green `AI inferred` (hovering an AI edge reveals confidence % + source diagram/doc citation + Confirm/Dismiss buttons). Export supports PNG, SVG, and Mermaid/JSON. |
-| **Right-Hand Inspector Drawer** | Selected node header (`Order Service`, `Healthy`, `Application \| Production`), Tabs (`Overview`, `Dependencies (12)`, `Documentation (3)`, `Incidents (2)`), Metadata fields, Open Incidents alert banner, External Deep Links (`ServiceNow`, `Infralens`, `Datadog`, `Azure`), Host/IP/Location | Slide-over context panel fed by `/api/v1/cis/{id}/inspector`. **Documentation tab** renders ACL-filtered cards grouped by type (`HLD`, `DR Runbook`, `Cyber Approval`) with freshness badges (`Updated 2023 - Stale`) and "Ask AI about these docs" chat drawer. **External Deep Links** are generated deterministically via URL templates using CMDB `sys_id`, `correlation_id`, Azure Resource ID, or Datadog service tag. |
+| **Right-Hand Inspector Drawer** | Selected node header (`Order Service`, `Healthy`, `Application \| Production`), Tabs (`Overview`, `Dependencies (12)`, `Documentation (3)`, `Incidents (2)`), Metadata fields, Open Incidents alert banner, External Deep Links (`ServiceNow`, `Enterprise APM`, `Datadog`, `Azure`), Host/IP/Location | Slide-over context panel fed by `/api/v1/cis/{id}/inspector`. **Documentation tab** renders ACL-filtered cards grouped by type (`HLD`, `DR Runbook`, `Cyber Approval`) with freshness badges (`Updated 2023 - Stale`) and "Ask AI about these docs" chat drawer. **External Deep Links** are generated deterministically via URL templates using CMDB `sys_id`, `correlation_id`, Azure Resource ID, or Datadog service tag. |
 | **Bottom Intelligence Cards** | `AI Recommendations (3)`, `Missing Information (2)`, `Key Insights`, `Faster Issue Resolution` | Actionable summary strip tied to the currently focused Application. Clicking any bullet highlights the specific offending node on the graph canvas (e.g., clicking `Owner not defined for Storage Account` pans/zooms to `Storage Account` and opens its Inspector drawer). |
 
 ### 7.2 Performance Strategy for Complex Enterprise Graphs
@@ -710,4 +708,4 @@ flowchart LR
 2. **Database Tier Selection:** Confirm starting on **Cloud SQL for PostgreSQL + `pgvector`** (fastest/lowest cost MVP, seamless migration path) vs. provisioning **AlloyDB for PostgreSQL** or **Spanner Graph** on day one.
 3. **Document ACL Strictness:** Confirm whether Phase 1 should enforce full per-document Entra ID ACL mirroring on SharePoint/Confluence (`acl_principals`), or start with a scoped set of engineering-wide spaces accessible to all authenticated engineers.
 4. **Confluence & SharePoint Hosting Topology:** Are Confluence and SharePoint strictly SaaS (Atlassian Cloud + SharePoint Online) reachable via HTTPS/Cloud NAT, or is Confluence self-hosted (Data Center) requiring Cloud Interconnect/VPN peering?
-5. **Deep-Link Correlation Fields:** Confirm which ServiceNow CI attributes store (or can derive) the deep-link identifiers for **Infralens**, **Datadog**, and **Azure** shown in the UI Inspector Drawer.
+5. **Deep-Link Correlation Fields:** Confirm which ServiceNow CI attributes store (or can derive) the deep-link identifiers for **Enterprise APM**, **Datadog**, and **Azure** shown in the UI Inspector Drawer.
